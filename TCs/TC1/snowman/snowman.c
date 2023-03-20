@@ -116,7 +116,6 @@ void NormalKeys(unsigned char key, int x, int y) {
 
 // Called to draw scene
 void RenderScene(void) {
-
 	// Quadric Object
 	GLUquadricObj *pObj;
 	
