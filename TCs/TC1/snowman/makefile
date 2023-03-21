@@ -1,13 +1,16 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -std=c99
-LDFLAGS=-lGL -lglut -lGLU
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99
+LDFLAGS = -lGL -lglut -lGLU
+OBJECTS = snowman.o utils.o
 
-snowman: snowman.o
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+snowman: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LDFLAGS)
 
-snowman.o: snowman.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+utils.o: utils.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f snowman.o snowman
-
+	rm -f snowman utils $(OBJECTS)

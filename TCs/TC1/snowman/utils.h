@@ -1,29 +1,17 @@
 #ifndef _utils_h_
 #define _utils_h_
 
+#include <GL/gl.h>
 #include <GL/glut.h>
 
 typedef struct Rgb {
-    GLfloat r;
-    GLfloat g;
-    GLfloat b;
+    GLfloat red;
+    GLfloat green;
+    GLfloat blue;
 } Rgb;
 
-typedef struct Position {
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-} Position;
-
-typedef struct Sphere {
-    GLUquadric* quad;
-    GLdouble radius;
-    GLint slices;
-	GLint stacks;
-} Sphere;
-
 typedef struct Cylinder {
-    GLUquadric* quad;
+	GLUquadric* quad;
 	GLdouble base;
 	GLdouble top;
 	GLdouble height;
@@ -39,6 +27,19 @@ typedef struct Disk {
 	GLint loops;
 } Disk;
 
+typedef struct Sphere {
+    GLUquadric* quad;
+    GLdouble radius;
+    GLint slices;
+	GLint stacks;
+} Sphere;
+
+typedef struct Position {
+    GLfloat x;
+    GLfloat y;
+    GLfloat z;
+} Position;
+
 typedef struct Rotation {
     GLfloat angle;
 	GLfloat x;
@@ -48,8 +49,14 @@ typedef struct Rotation {
 
 Rgb hexTo3f(int);
 
-void drawSphere(Rgb, Sphere, Position);
-void drawDisk(Rgb, Disk, Rotation, Position);
-void drawCylinder(Rgb, Cylinder, Position);
+Cylinder newCylinder(GLUquadric*, GLdouble, GLdouble, GLdouble, GLint, GLint);
+Disk newDisk(GLUquadric*, GLdouble, GLdouble, GLint, GLint);
+Sphere newSphere(GLUquadric*, GLdouble, GLint, GLint);
+Position newPosition(GLfloat, GLfloat, GLfloat);
+Rotation newRotation(GLfloat, GLfloat, GLfloat, GLfloat);
+
+void drawSphere(int, Sphere, Position);
+void drawDisk(int, Disk, Rotation, Position);
+void drawCylinder(int, Cylinder, Rotation, Position);
 
 #endif

@@ -7,6 +7,13 @@ static GLfloat yRot = 0.0f;
 static GLfloat xPos = 0.0f;
 static GLfloat yPos = 0.0f;
 
+Rotation rotation;
+Position position;
+Cylinder cylinder;
+Disk disk;
+Sphere sphere;
+int color;
+
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(int w, int h) {
 	GLfloat fAspect;
@@ -135,20 +142,18 @@ void RenderScene(void) {
 	gluQuadricNormals(pObj, GLU_SMOOTH);
 
 	// hat
-	glPushMatrix();
-	glColor3ub(0, 0, 0);
-	glTranslatef(0.0, 1.5, 0.0f);
-	glRotatef(90.0f, 5.0f, 0.0f, 0.0f);
-	gluCylinder(pObj, 0.2f, 0.2f, 0.5f, 50, 150); 
-	glPopMatrix();
+	color = 0x000000;
+	cylinder = newCylinder(pObj, 0.2f, 0.2f, 0.5f, 50, 150);
+	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, 1.5, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
 
 	// hat top
-	glPushMatrix();
-	glColor3ub(0, 0, 0);
-	glTranslatef(0.0, 1.5, 0.0);
-	glRotatef(-90.0f, 5.0f, 0.0f, 0.0f);
-	gluDisk(pObj, 0.0, 0.2, 1000, 10);
-	glPopMatrix();
+	color = 0x000000;
+	disk = newDisk(pObj, 0.0, 0.2, 1000, 10);
+	rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, 1.5, 0.0);
+	drawDisk(color, disk, rotation, position);
 
 	// brim
 	glPushMatrix();
@@ -199,6 +204,7 @@ void RenderScene(void) {
 	glPushMatrix();
 	glColor3f(1.0f, 0.54f, 0.0f);
 	glTranslatef(0.0f, 1.0f, 0.2f);
+	glRotatef(0.0f, 0.0f, 0.0f, 0.0f);
 	gluCylinder(pObj, 0.04f, 0.0f, 0.3f, 26, 13);
 	glPopMatrix();
 
