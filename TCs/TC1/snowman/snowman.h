@@ -6,6 +6,8 @@
 #include <GL/glut.h>
 #include <math.h>
 
+#include "utils.h"
+
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 600
 
