@@ -1,5 +1,52 @@
 #include "utils.h"
 
+void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Position position) {
+	Rgb color3f = hexTo3f(color);
+
+	// save transform matrix state
+	glPushMatrix();
+	glColor3f(color3f.red, color3f.green, color3f.blue);
+	// setting position in screen
+	glTranslatef(position.x, position.y, position.z);
+	// setting rotation in screen
+	glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+	// setting the disk itself
+	gluCylinder(cylinder.quad, cylinder.base, cylinder.top, cylinder.height, cylinder.slices, cylinder.stacks);
+	// restore transform matrix state
+	glPopMatrix();
+}
+
+void drawDisk(int color, Disk disk, Rotation rotation, Position position) {
+	Rgb color3f = hexTo3f(color);
+
+	// save transform matrix state
+	glPushMatrix();
+	glColor3f(color3f.red, color3f.green, color3f.blue);
+	// setting position in screen
+	glTranslatef(position.x, position.y, position.z);
+	// setting rotation in screen
+	glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+	// setting the disk itself
+	gluDisk(disk.quad, disk.inner, disk.outer, disk.slices, disk.loops);
+	// restore transform matrix state
+	glPopMatrix();
+}
+
+void drawSphere(int color, Sphere sphere, Position position) {
+	Rgb color3f = hexTo3f(color);
+	
+	// save transform matrix state
+	glPushMatrix();
+	// setting the color that goes [0, 1]
+	glColor3f(color3f.red, color3f.green, color3f.blue);
+	// setting position in screen
+	glTranslatef(position.x, position.y, position.z);
+	// setting the sphere itself
+	gluSphere(sphere.quad, sphere.radius, sphere.slices, sphere.stacks);
+	// restore transform matrix state
+	glPopMatrix();
+}
+
 Rgb hexTo3f(int hexValue) {
 	Rgb rgb;
 	rgb.red = ((hexValue >> 16) & 0xFF) / 255.0;
@@ -42,15 +89,6 @@ Sphere newSphere(GLUquadric* quad, GLdouble radius, GLint slices, GLint stacks) 
 	return sphere;
 }
 
-Position newPosition(GLfloat x, GLfloat y, GLfloat z) {
-	Position position;
-	position.x = x;
-	position.y = y;
-	position.z = z;
-
-	return position;
-}
-
 Rotation newRotation(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
 	Rotation rotation;
 	rotation.angle = angle;
@@ -61,50 +99,11 @@ Rotation newRotation(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
 	return rotation;
 }
 
-void drawSphere(int color, Sphere sphere, Position position) {
-	Rgb color3f = hexTo3f(color);
-	
-	// save transform matrix state
-	glPushMatrix();
-	// setting the color that goes [0, 1]
-	glColor3f(color3f.red, color3f.green, color3f.blue);
-	// setting position in screen
-	glTranslatef(position.x, position.y, position.z);
-	// setting the sphere itself
-	gluSphere(sphere.quad, sphere.radius, sphere.radius, sphere.stacks);
-	// restore transform matrix state
-	glPopMatrix();
+Position newPosition(GLfloat x, GLfloat y, GLfloat z) {
+	Position position;
+	position.x = x;
+	position.y = y;
+	position.z = z;
+
+	return position;
 }
-
-void drawDisk(int color, Disk disk, Rotation rotation, Position position) {
-	Rgb color3f = hexTo3f(color);
-
-	// save transform matrix state
-	glPushMatrix();
-	glColor3f(color3f.red, color3f.green, color3f.blue);
-	// setting position in screen
-	glTranslatef(position.x, position.y, position.z);
-	// setting rotation in screen
-	glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
-	// setting the disk itself
-	gluDisk(disk.quad, disk.inner, disk.outer, disk.slices, disk.loops);
-	// restore transform matrix state
-	glPopMatrix();
-}
-
-void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Position position) {
-	Rgb color3f = hexTo3f(color);
-
-	// save transform matrix state
-	glPushMatrix();
-	glColor3f(color3f.red, color3f.green, color3f.blue);
-	// setting position in screen
-	glTranslatef(position.x, position.y, position.z);
-	// setting rotation in screen
-	glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
-	// setting the disk itself
-	gluCylinder(cylinder.quad, cylinder.base, cylinder.top, cylinder.height, cylinder.slices, cylinder.stacks);
-	// restore transform matrix state
-	glPopMatrix();
-}
-

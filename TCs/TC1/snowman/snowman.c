@@ -1,18 +1,22 @@
 #include "snowman.h"
+#include "utils.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
 
-// Rotation
-static GLfloat xRot = 0.0f;
-static GLfloat yRot = 0.0f;
-// Position
-static GLfloat xPos = 0.0f;
-static GLfloat yPos = 0.0f;
+// Define the camera position and orientation
+GLfloat cameraPosition[3] = {0.0f, 0.0f, 5.0f};
+GLfloat cameraDirection[3] = {0.0f, 0.0f, -1.0f};
+GLfloat cameraUp[3] = {0.0f, 1.0f, 0.0f};
+GLfloat cameraSpeed = 0.05f;
 
-Rotation rotation;
-Position position;
+int color = 0x000000;
+
 Cylinder cylinder;
 Disk disk;
 Sphere sphere;
-int color;
+
+Position position;
+Rotation rotation;
 
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(int w, int h) {
@@ -37,6 +41,250 @@ void ChangeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
+
+// Respond to some other keys (move camera and zoom)
+void keyboardCallback(unsigned char key, int x, int y) {
+    switch(key) {
+        // Move the camera forward when the "W" key is pressed
+        case 'w':
+        case 'W':
+            cameraPosition[1] += cameraSpeed;
+            break;
+
+        // Move the camera backward when the "S" key is pressed
+        case 's':
+        case 'S':
+            cameraPosition[1] -= cameraSpeed;
+            break;
+
+        // Move the camera to the left when the "A" key is pressed
+        case 'a':
+        case 'A':
+            cameraPosition[0] -= cameraSpeed;
+            break;
+
+        // Move the camera to the right when the "D" key is pressed
+        case 'D':
+        case 'd':
+            cameraPosition[0] += cameraSpeed;
+            break;
+
+		// Zoom out when the "z" key is pressed
+		case 'z':
+			zoom -= cameraSpeed * 2;
+			break;
+		
+		// Zoom in when the "z" key is pressed
+		case 'Z':
+			zoom += cameraSpeed * 2;
+			break;
+		
+        // Exit the program when the "ESC" key is pressed
+        case 27:
+            exit(0);
+            break;
+    }
+
+    // Redraw the scene
+    glutPostRedisplay();
+}
+
+// Called to draw scene
+void RenderScene(void) {
+	// Quadric Object
+	GLUquadricObj *pObj;
+
+	// Clear the window with current clearing color
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(cameraPosition[0], cameraPosition[1], cameraPosition[2],
+              cameraPosition[0] + cameraDirection[0], cameraPosition[1] + cameraDirection[1], cameraPosition[2] + cameraDirection[2],
+              cameraUp[0], cameraUp[1], cameraUp[2]);
+
+	// Save the matrix state and do the rotations
+	glPushMatrix();
+
+	// Move object back and do in place rotation
+	glTranslatef(0.0f, -1.0f, zoom);
+	glRotatef(yRot, 1.0f, 0.0f, 0.0f);
+	glRotatef(xRot, 0.0f, 1.0f, 0.0f);
+
+	// Draw something
+	pObj = gluNewQuadric();
+	gluQuadricNormals(pObj, GLU_SMOOTH);
+
+	// hat
+	color = 0x000000;
+	cylinder = newCylinder(pObj, 0.2f, 0.2f, 0.35f, 50, 150);
+	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, 1.5, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	// hat top
+	color = 0x000000;
+	disk = newDisk(pObj, 0.0, 0.2, 1000, 10);
+	rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, 1.5, 0.0);
+	drawDisk(color, disk, rotation, position);
+
+	// brim
+	color = 0x000000;
+	cylinder = newCylinder(pObj, 0.3f, 0.3f, 0.05f, 50, 150);
+	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, 1.17, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	// brim top
+	color = 0x000000;
+	disk = newDisk(pObj, 0.0, 0.3, 1000, 10);
+	rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, 1.15, 0.0);
+	drawDisk(color, disk, rotation, position);
+
+	// brim down
+	color = 0x000000;
+	disk = newDisk(pObj, 0.0, 0.3, 1000, 10);
+	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, 1.15, 0.0);
+	drawDisk(color, disk, rotation, position);
+
+	// Head
+	color = 0xFFFFFF;
+	sphere = newSphere(pObj, 0.24f, 26, 13);
+	position = newPosition(0.0f, 1.0f, 0.0f);
+	drawSphere(color, sphere, position);
+
+	// eye left
+	color = 0x000000;
+	sphere = newSphere(pObj, 0.048f, 26, 13);
+	position = newPosition(0.07f, 1.06f, 0.18f);
+	drawSphere(color, sphere, position);
+
+	// eye right
+	color = 0x000000;
+	sphere = newSphere(pObj, 0.048f, 26, 13);
+	position = newPosition(-0.07f, 1.06f, 0.18f);
+	drawSphere(color, sphere, position);
+
+	// Nose
+	color = 0xFFA500;
+	cylinder = newCylinder(pObj, 0.04f, 0.0f, 0.3f, 26, 13);
+	rotation = newRotation(0.0f, 0.0f, 0.0f, 0.0f);
+	position = newPosition(0.0f, 1.0f, 0.2f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	// scarf
+	color = 0xFF0000;
+	cylinder = newCylinder(pObj, 0.21f, 0.21f, 0.08f, 50, 150);
+	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0f, 0.9f, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	color = 0xFF0000;
+	cylinder = newCylinder(pObj, 0.04f, 0.04f, 0.2f, 50, 150);
+	rotation = newRotation(-90.0f, -15.0f, 15.0f, 0.0f);
+	position = newPosition(-0.05, 0.9f, 0.15f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	color = 0xFF0000;
+	cylinder = newCylinder(pObj, 0.04f, 0.04f, 0.2f, 50, 150);
+	rotation = newRotation(-95.0f, -15.0f, -15.0f, 0.0f);
+	position = newPosition(0.06f, 0.9f, 0.15f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	// body
+	color = 0xFFFFFF;
+	sphere = newSphere(pObj, 0.29f, 26, 13);
+	position = newPosition(0.0, 0.6, 0.0);
+	drawSphere(color, sphere, position);
+
+	// left arm
+	color = 0x4B3621;
+	cylinder = newCylinder(pObj, 0.02f, 0.01f, 0.5f, 26, 13);
+	rotation = newRotation(-150.0f, 5.0f, 0.5f, 5.0f);
+	position = newPosition(0.23, 0.7, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	color = 0x4B3621;
+	cylinder = newCylinder(pObj, 0.01f, 0.005f, 0.2f, 26, 13);
+	rotation = newRotation(-90.0f, 5.0f, 0.0f, 5.0f);
+	position = newPosition(0.65, 0.91, 0.038f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	color = 0x4B3621;
+	cylinder = newCylinder(pObj, 0.02f, 0.01f, 0.5f, 26, 13);
+	rotation = newRotation(-150.0f, 5.0f, 0.5f, 5.0f);
+	position = newPosition(0.23, 0.7, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	color = 0x4B3621;
+	cylinder = newCylinder(pObj, 0.01f, 0.005f, 0.2f, 26, 13);
+	rotation = newRotation(-180.0f, 5.0f, 0.0f, 5.0f);
+	position = newPosition(0.65, 0.91, 0.038f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	// right arm
+	color = 0x4B3621;
+	cylinder = newCylinder(pObj, 0.01f, 0.02f, 0.5f, 26, 13);
+	rotation = newRotation(145.0f, 5.0f, 0.5f, 5.0f);
+	position = newPosition(-0.72, 0.89f, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	color = 0x4B3621;
+	cylinder = newCylinder(pObj, 0.005f, 0.01f, 0.2f, 26, 13);
+	rotation = newRotation(-240.0f, 5.0f, 0.0f, 5.0f);
+	position = newPosition(-0.98+0.15, 1.22-0.22, -0.02f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	color = 0x4B3621;
+	cylinder = newCylinder(pObj, 0.005f, 0.01f, 0.2f, 26, 13);
+	rotation = newRotation(-240.0f, 10.0f, 10.0f, 10.0f);
+	position = newPosition(-1.04+0.15, 1.1-0.22, 0.03f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	// first button
+	color = 0x000000;
+	sphere = newSphere(pObj, 0.048f, 26, 13);
+	position = newPosition(0.0f, 0.7f, 0.23f);
+	drawSphere(color, sphere, position);
+
+	// second button2
+	color = 0x000000;
+	sphere = newSphere(pObj, 0.048f, 26, 13);
+	position = newPosition(0.0, 0.6, 0.25);
+	drawSphere(color, sphere, position);
+
+	// third button3
+	color = 0x000000;
+	sphere = newSphere(pObj, 0.048f, 26, 13);
+	position = newPosition(0.0, 0.5, 0.23);
+	drawSphere(color, sphere, position);
+
+	// feet
+	color = 0xFFFFFF;
+	sphere = newSphere(pObj, 0.34f, 26, 13);
+	position = newPosition(0.0, 0.17, 0.0);
+	drawSphere(color, sphere, position);
+
+	// floor
+	color = 0xFFFFFF;
+	disk = newDisk(pObj, 0.0, 2.0, 1000, 10);
+	rotation = newRotation(-90.0f, 10.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, -0.18, 0.0);
+	drawDisk(color, disk, rotation, position);
+
+	color = 0xFFFFFF;
+	disk = newDisk(pObj, 0.0, 2.0, 1000, 10);
+	rotation = newRotation(90.0f, 10.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, -0.18, 0.0);
+	drawDisk(color, disk, rotation, position);
+
+	glPopMatrix();
+	
+	// Buffer swap
+	glutSwapBuffers();
+} 
 
 // This function does any needed initialization on the rendering context.  Here it sets up and initializes the lighting for the scene.  
 void SetupRC() {
@@ -65,268 +313,36 @@ void SetupRC() {
 	// Set Material properties to follow glColor values
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
-	// Black blue background
-	glClearColor(0.25f, 0.25f, 0.50f, 1.0f);
+	// Dark blue background
+	glClearColor(0.30f, 0.30f, 0.50f, 1.0f);
 }
 
 // Respond to arrow keys (rotate snowman)
 void SpecialKeys(int key, int x, int y) {
-	if (key == GLUT_KEY_DOWN) {
-		xRot += 5.0f;
-	}
+	switch (key) {
+		case GLUT_KEY_DOWN:
+			yRot -= 5.0f;
+			break;
 
-	if (key == GLUT_KEY_UP) {
-		xRot -= 5.0f;
-	}
+		case GLUT_KEY_UP:
+			yRot += 5.0f;
+			break;
 
+		case GLUT_KEY_LEFT:
+			xRot += 5.0f;
+			break;
+
+		case GLUT_KEY_RIGHT:
+			xRot -= 5.0f;
+			break;
+	}
+	
 	xRot = (GLfloat)((const int)xRot % 360);
-
-	if (key == GLUT_KEY_LEFT) {
-		yRot -= 5.0f;
-	}
-
-	if (key == GLUT_KEY_RIGHT){
-		yRot += 5.0f;
-	}
-
 	yRot = (GLfloat)((const int)yRot % 360);
-
+	
 	// Refresh the Window
 	glutPostRedisplay();
 }
-
-// Respond to wasd (move the camera) (not working yet)
-void NormalKeys(unsigned char key, int x, int y) {
-	if (key == 'w') {
-		yPos += 5.0f;
-	}
-
-	if (key == 's') {
-		yPos -= 5.0f;
-	}
-
-	yPos = (GLfloat)((const int)yPos % 360);
-
-	if (key == 'a') {
-		xPos += 5.0f;
-	}
-
-	if (key == 'd') {
-		xPos -= 5.0f;
-	}
-
-	xPos = (GLfloat)((const int)xPos % 360);
-
-	// Refresh the Window
-	glutPostRedisplay();
-}
-
-// Called to draw scene
-void RenderScene(void) {
-	// Quadric Object
-	GLUquadricObj *pObj;
-
-	// Clear the window with current clearing color
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Save the matrix state and do the rotations
-	glPushMatrix();
-
-	// Move object back and do in place rotation
-	glTranslatef(0.0f, -1.0f, -5.0f);
-	glRotatef(xRot, 1.0f, 0.0f, 0.0f);
-	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
-
-	// Draw something
-	pObj = gluNewQuadric();
-	gluQuadricNormals(pObj, GLU_SMOOTH);
-
-	// hat
-	color = 0x000000;
-	cylinder = newCylinder(pObj, 0.2f, 0.2f, 0.5f, 50, 150);
-	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
-	position = newPosition(0.0, 1.5, 0.0f);
-	drawCylinder(color, cylinder, rotation, position);
-
-	// hat top
-	color = 0x000000;
-	disk = newDisk(pObj, 0.0, 0.2, 1000, 10);
-	rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
-	position = newPosition(0.0, 1.5, 0.0);
-	drawDisk(color, disk, rotation, position);
-
-	// brim
-	glPushMatrix();
-	glColor3f(0.0, 0.0, 0.0);
-	glTranslatef(0.0, 1.17, 0.0f);
-	glRotatef(90.0f, 5.0f, 0.0f, 0.0f);
-	gluCylinder(pObj, 0.3f, 0.3f, 0.05f, 50, 150); 
-	glPopMatrix();
-
-	// brim top
-	glPushMatrix();
-	glColor3f(0.0, 0.0, 0.0);
-	glTranslatef(0.0, 1.15, 0.0);
-	glRotatef(-90.0f, 5.0f, 0.0f, 0.0f);
-	gluDisk(pObj, 0.0, 0.3, 1000, 10);
-	glPopMatrix();
-
-	// brim down
-	glPushMatrix();
-	glColor3f(0.0, 0.0, 0.0);
-	glTranslatef(0.0, 1.15, 0.0);
-	glRotatef(90.0f, 5.0f, 0.0f, 0.0f);
-	gluDisk(pObj, 0.0, 0.3, 1000, 10);
-	glPopMatrix();
-
-	// Head
-	glPushMatrix(); // save transform matrix state
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glTranslatef(0.0f, 1.0f, 0.0f);
-	gluSphere(pObj, 0.24f, 26, 13);
-	glPopMatrix(); // restore transform matrix state
-
-	// eye left
-	glPushMatrix();
-	glColor3f(0.0, 0.0, 0.0);
-	glTranslatef(0.07f, 1.06f, 0.18f);
-	gluSphere(pObj, 0.048f, 26, 13);
-	glPopMatrix();
-
-	// eye right
-	glPushMatrix();
-	glColor3f(0.0, 0.0, 0.0);
-	glTranslatef(-0.07f, 1.06f, 0.18f);
-	gluSphere(pObj, 0.048f, 26, 13);
-	glPopMatrix();
-
-	// Nose (orange)
-	glPushMatrix();
-	glColor3f(1.0f, 0.54f, 0.0f);
-	glTranslatef(0.0f, 1.0f, 0.2f);
-	glRotatef(0.0f, 0.0f, 0.0f, 0.0f);
-	gluCylinder(pObj, 0.04f, 0.0f, 0.3f, 26, 13);
-	glPopMatrix();
-
-	// scarf
-	glPushMatrix();
-	glColor3f(1.0, 0.0, 0.0);
-	glTranslatef(0.0f, 0.9f, 0.0f);
-	glRotatef(90.0f, 5.0f, 0.0f, 0.0f);
-	gluCylinder(pObj, 0.21f, 0.21f, 0.08f, 50, 150); 
-	glPopMatrix();
-
-	glPushMatrix();
-	glColor3f(1.0, 0.0, 0.0);
-	glTranslatef(-0.1, 0.8, 0.2f);
-	glRotatef(90.0f, 15.0f, 15.0f, 0.0f);
-	gluCylinder(pObj, 0.04f, 0.04f, 0.06f, 50, 150); 
-	glPopMatrix();
-
-	glPushMatrix();
-	glColor3f(1.0, 0.0, 0.0);
-	glTranslatef(-0.1, 0.8, 0.2f);
-	glRotatef(90.0f, -15.0f, -15.0f, 0.0f);
-	gluCylinder(pObj, 0.04f, 0.04f, 0.06f, 50, 150); 
-	glPopMatrix();
-
-	// body
-	glPushMatrix(); // save transform matrix state
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glTranslatef(0.0, 0.6, 0.0); 
-	gluSphere(pObj, 0.29f, 26, 13); // obj, raio, qualidade, qualidade2
- 	glPopMatrix(); // restore transform matrix state
-
-
-	// left arm
-	glPushMatrix();
-	glColor3f(0.5, 0.3, 0.2);
-	glTranslatef(0.23, 0.7, 0.0f);
-	glRotatef(-150.0f, 5.0f, 0.5f, 5.0f);
-	gluCylinder(pObj, 0.02f, 0.01f, 0.5f, 26, 13); 
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.65, 0.91, 0.038f);
-	glRotatef(-90.0f, 5.0f, 0.0f, 5.0f);
-	gluCylinder(pObj, 0.01f, 0.005f, 0.2f, 26, 13); 
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.65, 0.91, 0.038f);
-	glRotatef(-180.0f, 5.0f, 0.0f, 5.0f);
-	gluCylinder(pObj, 0.01f, 0.005f, 0.2f, 26, 13); 
-	glPopMatrix();
-
-	// right arm
-	glPushMatrix();
-	glColor3f(0.5, 0.3, 0.2);
-	glTranslatef(-0.72, 0.89f, 0.0f);
-	glRotatef(145.0f, 5.0f, 0.5f, 5.0f);
-	gluCylinder(pObj, 0.01f, 0.02f, 0.5f, 26, 13); 
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-0.98+0.15, 1.22-0.22, -0.02f);
-	glRotatef(-240.0f, 5.0f, 0.0f, 5.0f);
-	gluCylinder(pObj, 0.005f, 0.01f, 0.2f, 26, 13); 
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(-1.04+0.15, 1.1-0.22, 0.03f);
-	glRotatef(-240.0f, 10.0f, 10.0f, 10.0f);
-	gluCylinder(pObj, 0.005f, 0.01f, 0.2f, 26, 13); 
-	glPopMatrix();
-
-	// button1
-	glPushMatrix();
-	glColor3f(0.0, 0.0, 0.0);
-	glTranslatef(0.0f, 0.7f, 0.23f);
-	gluSphere(pObj, 0.048f, 26, 13);
-	glPopMatrix();
-
-	// button2
-	glPushMatrix();
-	glColor3f(0.0, 0.0, 0.0);
-	glTranslatef(0.0f, 0.6f, 0.25f);
-	gluSphere(pObj, 0.048f, 26, 13);
-	glPopMatrix();
-
-	// button3
-	glPushMatrix();
-	glColor3f(0.0, 0.0, 0.0);
-	glTranslatef(0.0f, 0.5f, 0.23f);
-	gluSphere(pObj, 0.048f, 26, 13);
-	glPopMatrix();
-
-	// feet
-	glPushMatrix(); // save transform matrix state
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glTranslatef(0.0, 0.17, 0.0); 
-	gluSphere(pObj, 0.34f, 26, 13); // obj, raio, qualidade, qualidade2
- 	glPopMatrix(); // restore transform matrix state
-
-	// floor
-	glPushMatrix();
-	glColor3f(1.0, 1.0, 1.0);
-	glTranslatef(0.0, -0.18, 0.0);
-	glRotatef(-90.0f, 10.0f, 0.0f, 0.0f);
-	gluDisk(pObj, 0.0, 2.0, 1000, 10);
-	glPopMatrix();
-
-	glPushMatrix();
-	glColor3f(1.0, 1.0, 1.0);
-	glTranslatef(0.0, -0.18, 0.0);
-	glRotatef(90.0f, 10.0f, 0.0f, 0.0f);
-	gluDisk(pObj, 0.0, 2.0, 1000, 10);
-	glPopMatrix();
-
-	// Restore the matrix state
-	glPopMatrix();
-
-	// Buffer swap
-	glutSwapBuffers();
-} 
 
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
@@ -334,10 +350,11 @@ int main(int argc, char *argv[]) {
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("Snowman");
 	glutReshapeFunc(ChangeSize);
+	glutKeyboardFunc(keyboardCallback);
 	glutSpecialFunc(SpecialKeys);
 	glutDisplayFunc(RenderScene);
 	SetupRC();
 	glutMainLoop();
-	
+
 	return 0; 
 }

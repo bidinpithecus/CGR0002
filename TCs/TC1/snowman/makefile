@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99
-LDFLAGS = -lGL -lglut -lGLU
+LDFLAGS = -lGL -lglut -lGLU -lm
 OBJECTS = snowman.o utils.o
 
 snowman: $(OBJECTS)
