@@ -4,6 +4,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#include <stdbool.h>
+#include <math.h>
 
 #define PI 3.14159265359
 
@@ -52,9 +54,14 @@ typedef struct Sphere {
 
 Rgb hexTo3f(int);
 
+bool isPointInsideOfCircle(float, Position);
+
+int randomNum(int, int);
+
 void drawCylinder(int, Cylinder, Rotation, Position);
 void drawDisk(int, Disk, Rotation, Position);
 void drawSphere(int, Sphere, Position);
+void fillDome(GLUquadric*, GLfloat);
 
 Cylinder newCylinder(GLUquadric*, GLdouble, GLdouble, GLdouble, GLint, GLint);
 Disk newDisk(GLUquadric*, GLdouble, GLdouble, GLint, GLint);

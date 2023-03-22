@@ -280,6 +280,9 @@ void RenderScene(void) {
 	position = newPosition(0.0, -0.18, 0.0);
 	drawDisk(color, disk, rotation, position);
 
+	// Snowflakes
+	fillDome(pObj, 3.5);
+	
 	double plane[] = {0.0, 1.0, 0.0, 0.2};
 	glClipPlane(GL_CLIP_PLANE0, plane);
 	glEnable(GL_CLIP_PLANE0);
@@ -288,7 +291,7 @@ void RenderScene(void) {
    	// draw the translucent sphere
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(1.0, 1.0, 1.0, 0.5);
+	glColor4f(1.0, 1.0, 1.0, 0.35);
 	GLUquadricObj *quadric = gluNewQuadric();
 	gluQuadricDrawStyle(quadric, GLU_FILL);
 	gluQuadricNormals(quadric, GLU_SMOOTH);
@@ -344,8 +347,10 @@ void SetupRC() {
 	// Set Material properties to follow glColor values
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
-	// Dark blue background
-	glClearColor(0.30f, 0.30f, 0.50f, 1.0f);
+	Rgb rgbColor = hexTo3f(0xE8DACC);
+
+	// Off-white background
+	glClearColor(rgbColor.red, rgbColor.green, rgbColor.blue, 1.0f);
 }
 
 // Respond to arrow keys (rotate snowman)
@@ -376,6 +381,8 @@ void SpecialKeys(int key, int x, int y) {
 }
 
 int main(int argc, char *argv[]) {
+	// seed the random number generator with current time
+	srand(time(0));
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);

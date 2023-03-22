@@ -47,6 +47,36 @@ void drawSphere(int color, Sphere sphere, Position position) {
 	glPopMatrix();
 }
 
+bool isPointInsideOfCircle(float radius, Position position) {
+	// Forget about z
+	return sqrt(pow(position.x, 2) + pow(position.y, 2) + pow(position.z, 2)) < radius;
+}
+
+int randomNum(int min, int max) {
+	return (rand() % (max - min + 1)) + min;
+}
+
+void fillDome(GLUquadric* quad, GLfloat domeRadius) {
+	int numOfFlakes = 50;
+	int snowflakesColor = 0xFFFFFF;
+
+	Sphere sphere;
+	Position position;
+
+	sphere = newSphere(quad, 0.04f, 26, 13);
+
+	// Loop through the dome to fill some snowflakes through it
+	for (int i = 0; i < numOfFlakes; i++) {
+		position.x = randomNum(-domeRadius, +domeRadius);
+		position.y = randomNum(0, +domeRadius);
+		position.z = randomNum(-domeRadius, +domeRadius);
+
+		if (isPointInsideOfCircle(domeRadius, position)) {
+			drawSphere(snowflakesColor, sphere, position);
+		}
+	}
+}
+
 Rgb hexTo3f(int hexValue) {
 	Rgb rgb;
 	rgb.red = ((hexValue >> 16) & 0xFF) / 255.0;
