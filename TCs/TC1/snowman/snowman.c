@@ -1,7 +1,5 @@
 #include "snowman.h"
 #include "utils.h"
-#include <GL/gl.h>
-#include <GL/glu.h>
 
 // Define the camera position and orientation
 GLfloat cameraPosition[3] = {0.0f, 0.0f, 5.0f};

@@ -36,6 +36,8 @@
 *.x86_64
 *.hex
 snowman
+castle
+robot
 
 # Debug files
 *.dSYM/
