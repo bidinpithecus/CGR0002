@@ -48,8 +48,7 @@ void drawSphere(int color, Sphere sphere, Position position) {
 }
 
 bool isPointInsideOfCircle(float radius, Position position) {
-	// Forget about z
-	return sqrt(pow(position.x, 2) + pow(position.y, 2) + pow(position.z, 2)) < radius;
+	return sqrt(pow(position.x, 2) + pow(position.y, 2) + pow(position.z, 2)) < radius - 0.04;
 }
 
 int randomNum(int min, int max) {
