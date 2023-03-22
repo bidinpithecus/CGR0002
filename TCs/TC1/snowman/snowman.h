@@ -6,7 +6,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
-
+#include <unistd.h>
 #include "utils.h"
 
 #define WINDOW_WIDTH 600
@@ -35,6 +35,7 @@ extern Sphere sphere;
 extern Position position;
 extern Rotation rotation;
 
+void timer(int);
 void ChangeSize(int, int);
 void keyboardCallback(unsigned char, int, int);
 void RenderScene(void);

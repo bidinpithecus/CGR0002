@@ -16,6 +16,14 @@ Sphere sphere;
 Position position;
 Rotation rotation;
 
+void timer(int value) {
+	xRot -= 5.0f;
+	xRot = (GLfloat)((const int)xRot % 360);
+
+    glutPostRedisplay();  // update display
+    glutTimerFunc(50, timer, 0);  // call timer function after 50ms
+}
+
 // Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(int w, int h) {
 	GLfloat fAspect;
@@ -367,7 +375,7 @@ void SpecialKeys(int key, int x, int y) {
 			break;
 
 		case GLUT_KEY_RIGHT:
-			xRot -= 5.0f;
+			xRot -= 2.0f;
 			break;
 	}
 	
@@ -380,6 +388,7 @@ void SpecialKeys(int key, int x, int y) {
 
 int main(int argc, char *argv[]) {
 	// seed the random number generator with current time
+
 	srand(time(0));
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -389,6 +398,7 @@ int main(int argc, char *argv[]) {
 	glutKeyboardFunc(keyboardCallback);
 	glutSpecialFunc(SpecialKeys);
 	glutDisplayFunc(RenderScene);
+	glutTimerFunc(0, timer, 0);
 	SetupRC();
 	glutMainLoop();
 
