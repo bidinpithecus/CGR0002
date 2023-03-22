@@ -35,9 +35,16 @@
 *.i*86
 *.x86_64
 *.hex
+
+# Ignore Binarys
 snowman
 castle
 robot
+
+# Do not ignore Folders
+!snowman/
+!castle/
+!robot/
 
 # Debug files
 *.dSYM/
