@@ -1,8 +1,7 @@
 #ifndef _castle_h_
 #define _castle_h_
 
-#include <GL/glut.h>
-#include <stdio.h>
+#include "utils.h"
 
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 600
@@ -13,13 +12,15 @@ static GLfloat cameraDirection[3] = {0.0f, 0.0f, -1.0f};
 static GLfloat cameraUp[3] = {0.0f, 1.0f, 0.0f};
 static GLfloat cameraSpeed = 0.05f;
 
+static Rotation rotation;
+static Coordinate position;
+static Coordinate scale;
+
 // Rotation
 static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
 // Camera
 static GLfloat zoom = -5.0f;
-
-static int color = 0x000000;
 
 // Change viewing volume and viewport.  Called when window is resized  
 void ChangeSize(int, int);
@@ -33,13 +34,13 @@ void SpecialKeys(int, int, int);
 // Called to draw scene  
 void RenderScene(void);
 
-void criar_torre(GLUquadricObj*, GLfloat, GLfloat, GLfloat);
+void createTower(GLUquadricObj*, GLfloat, GLfloat, GLfloat);
 
-void criar_parede();
+void createWall();
 
-void criar_paredes(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+void createWalls(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
 
-void criar_arvores(GLUquadricObj*, GLfloat, GLfloat, GLfloat);
+void createTrees(GLUquadricObj*, GLfloat, GLfloat, GLfloat);
 
 int main(int, char*[]);
 

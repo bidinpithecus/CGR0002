@@ -1,6 +1,23 @@
 #include "utils.h"
 
-void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Position position) {
+void drawCube(int color, double size, Rotation rotation, Coordinate position, Coordinate scale) {
+	Rgb color3f = hexTo3f(color);
+
+	// save transform matrix state
+	glPushMatrix();
+	glColor3f(color3f.red, color3f.green, color3f.blue);
+	// setting position in screen
+	glTranslatef(position.x, position.y, position.z);
+	// setting rotation in screen
+	glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
+	// setting the disk itself
+	glScalef(scale.x, scale.y, scale.z);
+	glutSolidCube(size);
+	// restore transform matrix state
+	glPopMatrix();
+}
+
+void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Coordinate position) {
 	Rgb color3f = hexTo3f(color);
 
 	// save transform matrix state
@@ -16,7 +33,7 @@ void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Position posi
 	glPopMatrix();
 }
 
-void drawDisk(int color, Disk disk, Rotation rotation, Position position) {
+void drawDisk(int color, Disk disk, Rotation rotation, Coordinate position) {
 	Rgb color3f = hexTo3f(color);
 
 	// save transform matrix state
@@ -32,7 +49,7 @@ void drawDisk(int color, Disk disk, Rotation rotation, Position position) {
 	glPopMatrix();
 }
 
-void drawSphere(int color, Sphere sphere, Position position) {
+void drawSphere(int color, Sphere sphere, Coordinate position) {
 	Rgb color3f = hexTo3f(color);
 	
 	// save transform matrix state
@@ -47,33 +64,8 @@ void drawSphere(int color, Sphere sphere, Position position) {
 	glPopMatrix();
 }
 
-bool isPointInsideOfCircle(float radius, Position position) {
+bool isPointInsideOfCircle(float radius, Coordinate position) {
 	return sqrt(pow(position.x, 2) + pow(position.y, 2) + pow(position.z, 2)) < radius - 0.04;
-}
-
-int randomNum(int min, int max) {
-	return (rand() % (max - min + 1)) + min;
-}
-
-void fillDome(GLUquadric* quad, GLfloat domeRadius) {
-	int numOfFlakes = 50;
-	int snowflakesColor = 0xFFFFFF;
-
-	Sphere sphere;
-	Position position;
-
-	sphere = newSphere(quad, 0.04f, 26, 13);
-
-	// Loop through the dome to fill some snowflakes through it
-	for (int i = 0; i < numOfFlakes; i++) {
-		position.x = randomNum(-domeRadius, +domeRadius);
-		position.y = randomNum(0, +domeRadius);
-		position.z = randomNum(-domeRadius, +domeRadius);
-
-		if (isPointInsideOfCircle(domeRadius, position)) {
-			drawSphere(snowflakesColor, sphere, position);
-		}
-	}
 }
 
 Rgb hexTo3f(int hexValue) {
@@ -128,8 +120,8 @@ Rotation newRotation(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
 	return rotation;
 }
 
-Position newPosition(GLfloat x, GLfloat y, GLfloat z) {
-	Position position;
+Coordinate newCoordinate(GLfloat x, GLfloat y, GLfloat z) {
+	Coordinate position;
 	position.x = x;
 	position.y = y;
 	position.z = z;

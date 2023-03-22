@@ -105,7 +105,7 @@ void SetupRC() {
 	glClearColor(rgbColor.red, rgbColor.green, rgbColor.blue, 1.0f);
 }
 
-// Respond to arrow keys (rotate snowman)
+// Respond to arrow keys (rotate castle)
 void SpecialKeys(int key, int x, int y) {
 	switch (key) {
 		case GLUT_KEY_DOWN:
@@ -124,7 +124,7 @@ void SpecialKeys(int key, int x, int y) {
 			xRot -= 5.0f;
 			break;
 	}
-	
+
 	xRot = (GLfloat)((const int)xRot % 360);
 	yRot = (GLfloat)((const int)yRot % 360);
 	
@@ -132,7 +132,7 @@ void SpecialKeys(int key, int x, int y) {
 	glutPostRedisplay();
 }
 
-void criar_torre(GLUquadricObj *pObj, GLfloat posx, GLfloat posy, GLfloat posz) {
+void createTower(GLUquadricObj *pObj, GLfloat posx, GLfloat posy, GLfloat posz) {
     glColor3f(0.35f, 0.35f, 0.35f);  
 	glPushMatrix();
 	glTranslatef(posx, posy, posz);
@@ -141,7 +141,7 @@ void criar_torre(GLUquadricObj *pObj, GLfloat posx, GLfloat posy, GLfloat posz) 
 	glPopMatrix();
 }
 
-void criar_parede() {
+void createWall() {
     glRotatef(0, 0, 0, 0);
     glColor3f(0.55f, 0.55f, 0.55f);
 	glPushMatrix();
@@ -203,9 +203,9 @@ void criar_parede() {
 	glPopMatrix();
 }
 
-void criar_paredes(GLfloat angulox, GLfloat anguloz, GLfloat translatex, GLfloat translatey, GLfloat translatez) {
-    glColor3f(0.6f, 0.6f, 0.6f);
+void createWalls(GLfloat angulox, GLfloat anguloz, GLfloat translatex, GLfloat translatey, GLfloat translatez) {
 	glPushMatrix();
+    glColor3f(0.6f, 0.6f, 0.6f);
 	float x=5.4,y=2.7/2.2,z=0.3;
     glRotatef(angulox, 0, anguloz, 0);
     glTranslatef(translatex, translatey+y/4, translatez);
@@ -243,19 +243,21 @@ void criar_paredes(GLfloat angulox, GLfloat anguloz, GLfloat translatex, GLfloat
 	glPopMatrix();
 }
 
-void criar_arvores(GLUquadricObj *pObj, GLfloat posx, GLfloat posy, GLfloat posz) {
-    glColor3f(0.7, 0.35, 0.25);
+void createTrees(GLUquadricObj *pObj, GLfloat posx, GLfloat posy, GLfloat posz) {
 	glPushMatrix();
+    glColor3f(0.7, 0.35, 0.25);
 	glTranslatef(posx, posy, posz);
 	glRotatef(90.0f, 5.0f, 0.0f, 0.0f);
 	gluCylinder(pObj, 0.05/2.0f, 0.05/2.0f, 0.3/2.0f, 26, 13);  
 	glPopMatrix();
-	glColor3f(0.0, 1.0, 0.0);
+
 	glPushMatrix();
+	glColor3f(0.0, 1.0, 0.0);
 	glTranslatef(posx, posy+0.3, posz);
 	glRotatef(90.0f, 5.0f, 0.0f, 0.0f);
 	gluCylinder(pObj, 0.0/2.0f, 0.13/2.0f, 0.38/2.0f, 26, 13);  
 	glPopMatrix();
+
 	glPushMatrix();
 	glTranslatef(posx, posy+0.4, posz);
 	glRotatef(90.0f, 5.0f, 0.0f, 0.0f);
@@ -265,60 +267,59 @@ void criar_arvores(GLUquadricObj *pObj, GLfloat posx, GLfloat posy, GLfloat posz
 
 // Called to draw scene  
 void RenderScene(void){  
-    GLUquadricObj *pObj;    // Quadric Object  
-      
-    // Clear the window with current clearing color  
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  
-  
-    // Save the matrix state and do the rotations  
-    glPushMatrix();
+	// Quadric Object
+	GLUquadricObj *pObj;
 
-	// Move object back and do in place rotation  
-	glTranslatef(0.0f, -1.0f, -5.0f);  
-	glRotatef(yRot, 0.0f, 1.0f, 0.0f);
-	glRotatef(xRot, 1.0f, 0.0f, 0.0f);  
+	// Clear the window with current clearing color
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(cameraPosition[0], cameraPosition[1], cameraPosition[2],
+              cameraPosition[0] + cameraDirection[0], cameraPosition[1] + cameraDirection[1], cameraPosition[2] + cameraDirection[2],
+              cameraUp[0], cameraUp[1], cameraUp[2]);
 
-	// Draw something  
-	pObj = gluNewQuadric();  
-	gluQuadricNormals(pObj, GLU_SMOOTH);  
+	// Save the matrix state and do the rotations
+	glPushMatrix();
+
+	// Move object back and do in place rotation
+	glTranslatef(0.0f, -1.0f, zoom);
+	glRotatef(yRot, 1.0f, 0.0f, 0.0f);
+	glRotatef(xRot, 0.0f, 1.0f, 0.0f);
+
+	// Draw something
+	pObj = gluNewQuadric();
+	gluQuadricNormals(pObj, GLU_SMOOTH);
 
 	// floor
-    glPushMatrix();
-	glColor3f(0.1f, 1.0f, 0.1f); 
-	glTranslatef(0.0, 0.0, 0.0f);
-	glRotatef(-90.0f, 90.0f, 0.0f, 0.0f);
-	glScalef(15.0f, 15.0f, 0.1f);
-	glutSolidCube(0.5);
-	glPopMatrix();
+	position = newCoordinate(0.0, 0.0, 0.0);
+	scale = newCoordinate(15.0f, 15.0f, 0.1f);
+	rotation = newRotation(-90.0f, 90.0f, 0.0f, 0.0f);
+	drawCube(0x7CFC00, 0.5, rotation, position, scale);
 
     // castle floor
-    glPushMatrix();
-	glColor3f(0.5f, 0.5f, 0.5f); // vermelho, verde, azul
-	glTranslatef(0.0, 0.01, 0.0f);
-	glRotatef(-90.0f, 90.0f, 0.0f, 0.0f);
-	glScalef(7.5f, 7.5f, 0.1f);
-	glutSolidCube(0.5);
-	glPopMatrix();
-	
+	position = newCoordinate(0.0, 0.01, 0.0f);
+	scale = newCoordinate(7.5f, 7.5f, 0.1f);
+	rotation = newRotation(-90.0f, 90.0f, 0.0f, 0.0f);
+	drawCube(0x808080, 0.5, rotation, position, scale);
 
     // create tower
     float translate_tower = 1.35;
-    criar_torre(pObj, translate_tower, 0.0, translate_tower);
-    criar_torre(pObj, -translate_tower, 0.0, translate_tower);
-    criar_torre(pObj, translate_tower, 0.0, -translate_tower);
-    criar_torre(pObj, -translate_tower, 0.0, -translate_tower);
+    createTower(pObj, translate_tower, 0.0, translate_tower);
+    createTower(pObj, -translate_tower, 0.0, translate_tower);
+    createTower(pObj, translate_tower, 0.0, -translate_tower);
+    createTower(pObj, -translate_tower, 0.0, -translate_tower);
 
     // create wall
-    criar_parede();
+    createWall();
     
     // crate walls
-    criar_paredes(90.0,90.0, 0, 0.0, 1.35);
-    criar_paredes(90.0,90.0, 0, 0.0, -1.35);
-    criar_paredes(0.0,0.0, 0, 0.0, -1.35);
+    createWalls(90.0,90.0, 0, 0.0, 1.35);
+    createWalls(90.0,90.0, 0, 0.0, -1.35);
+    createWalls(0.0,0.0, 0, 0.0, -1.35);
 
     // create trees
     for(int i=0; i < 10; i++){
-        criar_arvores(pObj, 0, 0.15, i+2);
+        createTrees(pObj, i, 0.15 , i+2);
     }
 
     // Restore the matrix state  
@@ -327,7 +328,7 @@ void RenderScene(void){
     // Buffer swap  
     glutSwapBuffers();  
 
-}    
+}
 
 int main(int argc, char *argv[]) {
 	// seed the random number generator with current time
@@ -335,7 +336,7 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-	glutCreateWindow("Snowman");
+	glutCreateWindow("Castle");
 	glutReshapeFunc(ChangeSize);
 	glutKeyboardFunc(keyboardCallback);
 	glutSpecialFunc(SpecialKeys);

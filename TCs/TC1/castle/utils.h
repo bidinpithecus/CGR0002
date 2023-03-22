@@ -27,11 +27,11 @@ typedef struct Disk {
 	GLint loops;
 } Disk;
 
-typedef struct Position {
+typedef struct Coordinate {
 	GLfloat x;
 	GLfloat y;
 	GLfloat z;
-} Position;
+} Coordinate;
 
 typedef struct Rgb {
 	GLfloat red;
@@ -55,19 +55,20 @@ typedef struct Sphere {
 
 Rgb hexTo3f(int);
 
-bool isPointInsideOfCircle(float, Position);
+bool isPointInsideOfCircle(float, Coordinate);
 
 int randomNum(int, int);
 
-void drawCylinder(int, Cylinder, Rotation, Position);
-void drawDisk(int, Disk, Rotation, Position);
-void drawSphere(int, Sphere, Position);
-void fillDome(GLUquadric*, GLfloat);
+void drawCube(int color, double size, Rotation rotation, Coordinate position, Coordinate scale);
+void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Coordinate position);
+void drawDisk(int color, Disk disk, Rotation rotation, Coordinate position);
+void drawSphere(int, Sphere sphere, Coordinate position);
+void fillDome(GLUquadric* quadric, GLfloat radius);
 
 Cylinder newCylinder(GLUquadric*, GLdouble, GLdouble, GLdouble, GLint, GLint);
 Disk newDisk(GLUquadric*, GLdouble, GLdouble, GLint, GLint);
 Sphere newSphere(GLUquadric*, GLdouble, GLint, GLint);
-Position newPosition(GLfloat, GLfloat, GLfloat);
+Coordinate newCoordinate(GLfloat, GLfloat, GLfloat);
 Rotation newRotation(GLfloat, GLfloat, GLfloat, GLfloat);
 
 #endif
