@@ -21,7 +21,7 @@ void timer(int value) {
 	xRot = (GLfloat)((const int)xRot % 360);
 
     glutPostRedisplay();  // update display
-    glutTimerFunc(50, timer, 0);  // call timer function after 50ms
+    glutTimerFunc(70, timer, 0);  // call timer function after 50ms
 }
 
 // Change viewing volume and viewport.  Called when window is resized
