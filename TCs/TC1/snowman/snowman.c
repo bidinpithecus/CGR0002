@@ -168,26 +168,26 @@ void RenderScene(void) {
 	drawSphere(color, sphere, position);
 
 	// Nose
-	color = 0xFFA500;
+	color = 0xED9121;
 	cylinder = newCylinder(pObj, 0.04f, 0.0f, 0.3f, 26, 13);
 	rotation = newRotation(0.0f, 0.0f, 0.0f, 0.0f);
 	position = newPosition(0.0f, 1.0f, 0.2f);
 	drawCylinder(color, cylinder, rotation, position);
 
 	// scarf
-	color = 0xFF0000;
+	color = 0x205C28;
 	cylinder = newCylinder(pObj, 0.21f, 0.21f, 0.08f, 50, 150);
 	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
 	position = newPosition(0.0f, 0.9f, 0.0f);
 	drawCylinder(color, cylinder, rotation, position);
 
-	color = 0xFF0000;
+	color = 0x205C28;
 	cylinder = newCylinder(pObj, 0.04f, 0.04f, 0.2f, 50, 150);
 	rotation = newRotation(-90.0f, -15.0f, 15.0f, 0.0f);
 	position = newPosition(-0.05, 0.9f, 0.15f);
 	drawCylinder(color, cylinder, rotation, position);
 
-	color = 0xFF0000;
+	color = 0x205C28;
 	cylinder = newCylinder(pObj, 0.04f, 0.04f, 0.2f, 50, 150);
 	rotation = newRotation(-95.0f, -15.0f, -15.0f, 0.0f);
 	position = newPosition(0.06f, 0.9f, 0.15f);
@@ -269,19 +269,50 @@ void RenderScene(void) {
 
 	// floor
 	color = 0xFFFFFF;
-	disk = newDisk(pObj, 0.0, 2.0, 1000, 10);
-	rotation = newRotation(-90.0f, 10.0f, 0.0f, 0.0f);
+	disk = newDisk(pObj, 0.0, 3.5, 1000, 10);
+	rotation = newRotation(-90.0f, 50.0f, 0.0f, 0.0f);
 	position = newPosition(0.0, -0.18, 0.0);
 	drawDisk(color, disk, rotation, position);
 
 	color = 0xFFFFFF;
-	disk = newDisk(pObj, 0.0, 2.0, 1000, 10);
-	rotation = newRotation(90.0f, 10.0f, 0.0f, 0.0f);
+	disk = newDisk(pObj, 0.0, 3.5, 1000, 10);
+	rotation = newRotation(90.0f, 50.0f, 0.0f, 0.0f);
 	position = newPosition(0.0, -0.18, 0.0);
 	drawDisk(color, disk, rotation, position);
 
+	double plane[] = {0.0, 1.0, 0.0, 0.2};
+	glClipPlane(GL_CLIP_PLANE0, plane);
+	glEnable(GL_CLIP_PLANE0);
+
+	glPushMatrix();
+   	// draw the translucent sphere
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0, 1.0, 1.0, 0.5);
+	GLUquadricObj *quadric = gluNewQuadric();
+	gluQuadricDrawStyle(quadric, GLU_FILL);
+	gluQuadricNormals(quadric, GLU_SMOOTH);
+	gluSphere(quadric, 3.5, 50, 50);
+	gluDeleteQuadric(quadric);
+	glDisable(GL_BLEND);
+	glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
-	
+
+	// floor
+	color = 0xC54245;
+	cylinder = newCylinder(pObj, 3.5f, 3.5f, 0.66f, 50, 150);
+	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0f, -0.19f, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	color = 0xC54245;
+	disk = newDisk(pObj, 0.0, 3.5f, 1000, 10);
+	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
+	position = newPosition(0.0, -0.85f, 0.0);
+	drawDisk(color, disk, rotation, position);
+
+	glPopMatrix();
+
 	// Buffer swap
 	glutSwapBuffers();
 } 

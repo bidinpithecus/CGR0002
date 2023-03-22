@@ -15,7 +15,7 @@
 static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
 // Camera
-static GLfloat zoom = -2.0f;
+static GLfloat zoom = -5.0f;
 
 // Define the camera position and orientation
 extern GLfloat cameraDirection[3];
