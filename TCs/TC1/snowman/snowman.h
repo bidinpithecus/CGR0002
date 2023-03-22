@@ -8,14 +8,14 @@
 
 #include "utils.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 800
+#define WINDOW_WIDTH 600
+#define WINDOW_HEIGHT 600
 
 // Rotation
 static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
 // Camera
-static GLfloat zoom = 2.0f;
+static GLfloat zoom = -2.0f;
 
 // Define the camera position and orientation
 extern GLfloat cameraDirection[3];
