@@ -14,8 +14,29 @@ static GLfloat cameraDirection[3] = {0.0f, 0.0f, -1.0f};
 static GLfloat cameraUp[3] = {0.0f, 1.0f, 0.0f};
 static GLfloat cameraSpeed = 0.05f;
 
-const int colorPalette[] = { 0x292929, 0x604646, 0x927A61, 0x515151, 0x39405E };
-// const int colorPalette[] = { 0xFF0000, 0x00FF00, 0x0000FF, 0x00FFFF };
+const int colorPalette[] = { 	
+	// Walls
+	0x5A5A5A,
+	// Roof
+	0xDC5539,
+	// Flag
+	0x5E3C99,
+	// Flag Haste
+	0x000000,
+	// Tree
+	0x765C48,
+	// Leaves
+	0x2E8D36,
+	// Grass
+	0x261c06,
+	// Mud
+	0x135000,
+	// Water
+	0x010D14
+};
+
+const GLfloat grassSide = 15.0f;
+const GLfloat waterSide = 9.8f;
 
 extern Rotation rotation;
 extern Coordinate position;
@@ -44,13 +65,11 @@ void SpecialKeys(int, int, int);
 // Called to draw scene  
 void RenderScene(void);
 
-void createTower(GLUquadricObj*, Coordinate position);
-
+void createTower(GLUquadricObj* quad, GLfloat towerBase, GLfloat towerHeight, Coordinate position, bool hasFlag);
+void drawBackWall(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
 void drawFrontWall(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
-
 void drawSideWall(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
-
-void createTrees(GLUquadricObj*, GLfloat, GLfloat, GLfloat);
+void createTree(GLUquadricObj*, Coordinate position);
 
 int main(int, char*[]);
 

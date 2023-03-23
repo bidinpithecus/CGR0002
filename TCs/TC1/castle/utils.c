@@ -126,3 +126,7 @@ Coordinate newCoordinate(GLfloat x, GLfloat y, GLfloat z) {
 
 	return position;
 }
+
+int randomNum(int min, int max) {
+	return (rand() % (max - min + 1)) + min;
+}

@@ -1,6 +1,7 @@
 #include "castle.h"
 #include "utils.h"
 #include <GL/gl.h>
+#include <GL/glu.h>
 
 Rotation rotation;
 Coordinate position;
@@ -140,103 +141,154 @@ void SpecialKeys(int key, int x, int y) {
 	glutPostRedisplay();
 }
 
-void createTower(GLUquadricObj *pObj, Coordinate position) {
+void createTower(GLUquadricObj *pObj, GLfloat towerBase, GLfloat towerHeight, Coordinate position, bool hasFlag) {
 	glPushMatrix();
-	GLfloat towerHeight = 1.0f;
 	// Tower
 	rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
-	cylinder = newCylinder(pObj, 0.2f, 0.2f, towerHeight, 26, 13);
+	cylinder = newCylinder(pObj, towerBase, towerBase, towerHeight, 26, 13);
+	GLfloat hasteSize = 0.4 * towerHeight;
+	GLfloat hasteBase = 0.06 * towerBase;
 
-	drawCylinder(colorPalette[4], cylinder, rotation, position);
+	drawCylinder(colorPalette[0], cylinder, rotation, position);
 
-	// Top
-	cylinder = newCylinder(pObj, 0.0 / 2.0f, 0.50 / 2.0f, 0.7 / 2.0f, 26, 13);
+	// Roof
+	cylinder = newCylinder(pObj, 0.0, towerBase * 1.25f, towerBase * 1.35f, 26, 13);
 	Coordinate topPosition = newCoordinate(position.x, (towerHeight * 0.99) + cylinder.height, position.z);
 	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
-	drawCylinder(colorPalette[2], cylinder, rotation, topPosition);
+	drawCylinder(colorPalette[1], cylinder, rotation, topPosition);
 
-	rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
-	topPosition.y *= 0.9f;
-	cylinder = newCylinder(pObj, 0.03 / 2.0f, 0.03 / 2.0f, 0.8 / 2.0f, 26, 13);
-	drawCylinder(colorPalette[2], cylinder, rotation, topPosition);
+	if (hasFlag) {
+		rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
+		topPosition.y *= 0.9f;
+		cylinder = newCylinder(pObj, hasteBase, hasteBase, hasteSize, 26, 13);
+		drawCylinder(colorPalette[3], cylinder, rotation, topPosition);
 
-    rotation = newRotation(0, 0, 0, 0);
-	scale = newCoordinate(0.70f, 0.25f, 0.1f);
-	topPosition.x += ((scale.x / 4.0f) - (cylinder.base));
-	topPosition.y += 0.8 / 2.0f;
-	drawCube(colorPalette[0], CUBE_SIZE, rotation, topPosition, scale);
+		rotation = newRotation(0, 0, 0, 0);
+		scale = newCoordinate(0.70f, 0.25f, 0.1f);
+		topPosition.x += ((scale.x / 4.0f) - (cylinder.base));
+		topPosition.y += hasteSize;
+		drawCube(colorPalette[2], CUBE_SIZE, rotation, topPosition, scale);
+	}
 
+	glPopMatrix();
+}
+
+void drawBackWall(GLfloat anguloX, GLfloat anguloZ, GLfloat translateX, GLfloat translateY, GLfloat translateZ) {
+	glPushMatrix();
+	GLfloat wallHeight = (2.7 / 2.2) * 1.5;
+	coordinate = newCoordinate(5.4, wallHeight, 0.3);
+    rotation = newRotation(anguloX, 0, anguloZ, 0);
+
+    position = newCoordinate(translateX * translateTower, translateY + coordinate.y / 4, translateZ * translateTower);
+	scale = newCoordinate(coordinate.x, coordinate.y, coordinate.z);
+	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+
+    coordinate = newCoordinate(0.77, wallHeight, 0.3);
+	scale = newCoordinate(coordinate.x, coordinate.y / 3, coordinate.z);
+
+	position = newCoordinate(translateX * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
+	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+
+	position = newCoordinate(-0.5 * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
+	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+
+	position = newCoordinate(0.5 * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
+	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
 	glPopMatrix();
 }
 
 void drawFrontWall(GLfloat anguloX, GLfloat anguloZ, GLfloat translateX, GLfloat translateY, GLfloat translateZ) {
 	glPushMatrix();
-	coordinate = newCoordinate(5.4, 2.7 / 2.2, 0.3);
+	GLfloat wallHeight = (2.7 / 2.2 * 1.5);
+	coordinate = newCoordinate(5.4, (wallHeight) / 2, 0.3);
     rotation = newRotation(anguloX, 0, anguloZ, 0);
 
-    position = newCoordinate(translateX * translateTower, translateY + coordinate.y / 4, translateZ * translateTower);
-	scale = newCoordinate(coordinate.x, coordinate.y, coordinate.z);
+    position = newCoordinate(translateX * translateTower, coordinate.y - (((coordinate.y / 3) / 2) - 0.0375), translateZ * translateTower);
+	scale = newCoordinate(coordinate.x, coordinate.y * 0.5, coordinate.z);
 	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
 
-    coordinate = newCoordinate(0.77, 2.7 / 2.2, 0.3);
+    coordinate = newCoordinate(0.77, wallHeight, 0.3);
 	scale = newCoordinate(coordinate.x, coordinate.y / 3, coordinate.z);
 
-	position = newCoordinate(translateX * translateTower, 0.25 + coordinate.y * 0.325, translateZ * translateTower);
+	position = newCoordinate(translateX * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
 	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
 
-	coordinate = newCoordinate(0.77, 2.7 / 2.2, 0.3);
+    coordinate = newCoordinate(5.4, 0, 0.3);
+	scale = newCoordinate(0.35 * coordinate.x, wallHeight, coordinate.z);
+	position = newCoordinate(-translateTower + 0.5, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
+	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+
+	position = newCoordinate(translateTower - 0.5, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
+	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+
+	coordinate = newCoordinate(0.77, wallHeight, 0.3);
 	scale = newCoordinate(coordinate.x, coordinate.y / 3, coordinate.z);
 
-	position = newCoordinate(-0.5 * translateTower, 0.25 + coordinate.y * 0.325, translateZ * translateTower);
+	position = newCoordinate(-0.5 * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
 	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
 
-	position = newCoordinate(0.5 * translateTower, 0.25 + coordinate.y * 0.325, translateZ * translateTower);
+	position = newCoordinate(0.5 * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
 	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+
+	// Create door
+	position = newCoordinate(translateX * translateTower, coordinate.y / 4, 1.4625);
+	scale = newCoordinate(translateTower * 1.15f, coordinate.y * 1.0f, coordinate.z / 2);
+	drawCube(colorPalette[6], CUBE_SIZE, rotation, position, scale);
+
 	glPopMatrix();
 }
 
 void drawSideWall(GLfloat anguloX, GLfloat anguloZ, GLfloat translateX, GLfloat translateY, GLfloat translateZ) {
 	glPushMatrix();
-	coordinate = newCoordinate(5.4, 2.7 / 2.2, 0.3);
+	GLfloat wallHeight = (2.7 / 2.2) * 1.5;
+	coordinate = newCoordinate(5.4, wallHeight, 0.3);
     rotation = newRotation(anguloX, 0, anguloZ, 0);
 
     position = newCoordinate(translateX * translateTower, translateY + coordinate.y / 4, translateZ * translateTower);
 	scale = newCoordinate(coordinate.x, coordinate.y, coordinate.z);
 	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
 
-    coordinate = newCoordinate(0.77, 2.7 / 2.2, 0.3);
+    coordinate = newCoordinate(0.77, wallHeight, 0.3);
 	scale = newCoordinate(coordinate.x, coordinate.y / 3, coordinate.z);
 
-	position = newCoordinate(translateX * translateTower, 0.25 + coordinate.y * 0.325, translateZ * translateTower);
+	position = newCoordinate(translateX * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower);
 	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
 
-	coordinate = newCoordinate(0.77, 2.7 / 2.2, 0.3);
 	scale = newCoordinate(coordinate.x, coordinate.y / 3, coordinate.z);
 
-	position = newCoordinate(translateX * translateTower, 0.25 + coordinate.y * 0.325, translateZ * translateTower + (coordinate.x));
+	position = newCoordinate(translateX * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower + (coordinate.x));
 	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
 
-	position = newCoordinate(translateX * translateTower, 0.25 + coordinate.y * 0.325, translateZ * translateTower - (coordinate.x));
+	position = newCoordinate(translateX * translateTower, 0.35 + coordinate.y * 0.325, translateZ * translateTower - (coordinate.x));
 	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
 	glPopMatrix();
 }
 
-void createTrees(GLUquadricObj *pObj, GLfloat posX, GLfloat posY, GLfloat posZ) {
+void createTree(GLUquadricObj *pObj, Coordinate position) {
 	glPushMatrix();
-	position = newCoordinate(posX, posY, posZ);
-	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
-	cylinder = newCylinder(pObj, 0.05 / 2.0f, 0.05 / 2.0f, 0.3 / 2.0f, 26, 13);
-	drawCylinder(colorPalette[2], cylinder, rotation, position);
+	rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
+	cylinder = newCylinder(pObj, 0.05, 0.05, 0.8, 26, 13);
+	drawCylinder(colorPalette[4], cylinder, rotation, position);
 
-	position = newCoordinate(posX, posY + 0.3, posZ);
-	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
-	cylinder = newCylinder(pObj, 0.0 / 2.0f, 0.13 / 2.0f, 0.38 / 2.0f, 26, 13);
-	drawCylinder(colorPalette[3], cylinder, rotation, position);
+	rotation.angle = 90.0f;
+	position.y += (cylinder.height);
+	cylinder.base = 0.0;
+	cylinder.top = 0.24;
+	cylinder.height = 0.60;
+	position.y += (cylinder.height / 2.5);
+	drawCylinder(colorPalette[5], cylinder, rotation, position);
 
-	position = newCoordinate(posX, posY + 0.4, posZ);
-	rotation = newRotation(90.0f, 5.0f, 0.0f, 0.0f);
-	cylinder = newCylinder(pObj, 0.0 / 2.0f, 0.09 / 2.0f, 0.3 / 2.0f, 26, 13);
-	drawCylinder(colorPalette[3], cylinder, rotation, position);
+	cylinder.base = 0.0;
+	cylinder.top = 0.18;
+	cylinder.height = 0.45;
+	position.y += (cylinder.height / 2.5);
+	drawCylinder(colorPalette[5], cylinder, rotation, position);
+
+	cylinder.base = 0.0;
+	cylinder.top = 0.12;
+	cylinder.height = 0.30;
+	position.y += (cylinder.height / 2);
+	drawCylinder(colorPalette[5], cylinder, rotation, position);
 	glPopMatrix();
 }
 
@@ -244,6 +296,7 @@ void createTrees(GLUquadricObj *pObj, GLfloat posX, GLfloat posY, GLfloat posZ) 
 void RenderScene(void){  
 	// Quadric Object
 	GLUquadricObj *pObj;
+	GLUquadricObj *pDoor;
 
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -265,35 +318,55 @@ void RenderScene(void){
 	pObj = gluNewQuadric();
 	gluQuadricNormals(pObj, GLU_SMOOTH);
 
-	// floor
+	// grass
 	position = newCoordinate(0.0, 0.0, 0.0);
-	scale = newCoordinate(15.0f, 15.0f, 0.1f);
+	scale = newCoordinate(grassSide, grassSide, 0.1f);
 	rotation = newRotation(-90.0f, 90.0f, 0.0f, 0.0f);
-	drawCube(0x135000, CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[7], CUBE_SIZE, rotation, position, scale);
 
 	// water
 	position = newCoordinate(0.0, 0.0, 0.0);
-	scale = newCoordinate(9.8f, 9.8f, 0.101f);
+	scale = newCoordinate(waterSide, waterSide, 0.101f);
 	rotation = newRotation(-90.0f, 90.0f, 0.0f, 0.0f);
-	drawCube(0x010D14, CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[8], CUBE_SIZE, rotation, position, scale);
 
     // castle floor
 	position = newCoordinate(0.0, 0.01, 0.0f);
 	scale = newCoordinate(6.8f, 6.8f, 0.1008f);
 	rotation = newRotation(-90.0f, 90.0f, 0.0f, 0.0f);
-	drawCube(0x808080, CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[6], CUBE_SIZE, rotation, position, scale);
 
     // create tower
-    createTower(pObj, newCoordinate(translateTower, 0.0, translateTower));
-    createTower(pObj, newCoordinate(-translateTower, 0.0, translateTower));
-    createTower(pObj, newCoordinate(translateTower, 0.0, -translateTower));
-    createTower(pObj, newCoordinate(-translateTower, 0.0, -translateTower));
+    createTower(pObj, 0.2f, 1.25f, newCoordinate(translateTower, 0.0, translateTower), true);
+    createTower(pObj, 0.2f, 1.25f, newCoordinate(-translateTower, 0.0, translateTower), true);
+    createTower(pObj, 0.2f, 1.25f, newCoordinate(translateTower, 0.0, -translateTower), true);
+    createTower(pObj, 0.2f, 1.25f, newCoordinate(-translateTower, 0.0, -translateTower), true);
 
-    // crate walls
+	createTower(pObj, 0.3f, 2.0f, newCoordinate(0.0, 0.0, 0.0), true);
+
+    createTower(pObj, 0.185f, 1.25f, newCoordinate(0.35f, 0.0, 0.35f), false);
+    createTower(pObj, 0.185f, 1.25f, newCoordinate(-0.35f, 0.0, 0.35f), false);
+    createTower(pObj, 0.185f, 1.25f, newCoordinate(0.35f, 0.0, -0.35f), false);
+    createTower(pObj, 0.185f, 1.25f, newCoordinate(-0.35f, 0.0, -0.3f), false);
+
+    // Create walls
     drawSideWall(90.0,90.0, -1, 0.0, 0);
     drawSideWall(90.0,90.0, 1, 0.0, 0);
-    drawFrontWall(0.0,0.0, 0, 0.0, -1);
+    drawBackWall(0.0,0.0, 0, 0.0, -1);
     drawFrontWall(0.0,0.0, 0, 0.0, 1);
+
+	// create trees
+	createTree(pObj, newCoordinate(2.8, 0.0, 3.3));
+	createTree(pObj, newCoordinate(3.3, 0.0, 2.8));
+	createTree(pObj, newCoordinate(-2.8, 0.0, 3.3));
+	createTree(pObj, newCoordinate(-3.3, 0.0, 2.8));
+	createTree(pObj, newCoordinate(2.8, 0.0, -3.3));
+	createTree(pObj, newCoordinate(3.3, 0.0, -2.8));
+	createTree(pObj, newCoordinate(-2.8, 0.0, -3.3));
+	createTree(pObj, newCoordinate(-3.3, 0.0, -2.8));
+	createTree(pObj, newCoordinate(0.0, 0.0, -2.8));
+	createTree(pObj, newCoordinate(-3.3, 0.0, 0));
+	createTree(pObj, newCoordinate(3.3, 0.0, 0));
 
     // Restore the matrix state  
     glPopMatrix();  
@@ -304,7 +377,6 @@ void RenderScene(void){
 
 int main(int argc, char *argv[]) {
 	// seed the random number generator with current time
-	srand(time(0));
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
