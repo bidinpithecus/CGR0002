@@ -18,7 +18,7 @@ const int colorPalette[] = {
 	// Walls
 	0x5A5A5A,
 	// Roof
-	0xDC5539,
+	0x742C05,
 	// Flag
 	0x5E3C99,
 	// Flag Haste
@@ -27,16 +27,17 @@ const int colorPalette[] = {
 	0x765C48,
 	// Leaves
 	0x2E8D36,
-	// Grass
-	0x261c06,
 	// Mud
+	0x261c06,
+	// Grass
 	0x135000,
 	// Water
+	0x222b8c,
 	0x010D14
 };
 
 const GLfloat grassSide = 15.0f;
-const GLfloat waterSide = 9.8f;
+const GLfloat waterSide = 9.5f;
 
 extern Rotation rotation;
 extern Coordinate position;

@@ -84,7 +84,7 @@ void keyboardCallback(unsigned char key, int x, int y) {
 // This function does any needed initialization on the rendering context.  Here it sets up and initializes the lighting for the scene.
 void SetupRC() {
 	// Light values and coordinates
-	GLfloat whiteLight[] = { 0.05f, 0.05f, 0.05f, 1.0f };
+	GLfloat whiteLight[] = { 0.4, 0.4, 0.4, 1.0f };
 	GLfloat sourceLight[] = { 0.25f, 0.25f, 0.25f, 1.0f };
 	GLfloat lightPos[] = { -10.f, 5.0f, 5.0f, 1.0f };
 
@@ -144,7 +144,7 @@ void SpecialKeys(int key, int x, int y) {
 void createTower(GLUquadricObj *pObj, GLfloat towerBase, GLfloat towerHeight, Coordinate position, bool hasFlag) {
 	glPushMatrix();
 	// Tower
-	rotation = newRotation(-90.0f, 5.0f, 0.0f, 0.0f);
+	rotation = newRotation(90.0f, -5.0f, 0.0f, 0.0f);
 	cylinder = newCylinder(pObj, towerBase, towerBase, towerHeight, 26, 13);
 	GLfloat hasteSize = 0.4 * towerHeight;
 	GLfloat hasteBase = 0.06 * towerBase;
@@ -319,20 +319,20 @@ void RenderScene(void){
 	gluQuadricNormals(pObj, GLU_SMOOTH);
 
 	// grass
-	position = newCoordinate(0.0, 0.0, 0.0);
-	scale = newCoordinate(grassSide, grassSide, 0.1f);
+	position = newCoordinate(0.0, 0.0001, 0.0);
+	scale = newCoordinate(grassSide, grassSide, 0.9f);
 	rotation = newRotation(-90.0f, 90.0f, 0.0f, 0.0f);
 	drawCube(colorPalette[7], CUBE_SIZE, rotation, position, scale);
 
 	// water
-	position = newCoordinate(0.0, 0.0, 0.0);
-	scale = newCoordinate(waterSide, waterSide, 0.101f);
+	position = newCoordinate(0.0, 0.0002, 0.0);
+	scale = newCoordinate(waterSide, waterSide, 0.9f);
 	rotation = newRotation(-90.0f, 90.0f, 0.0f, 0.0f);
 	drawCube(colorPalette[8], CUBE_SIZE, rotation, position, scale);
 
     // castle floor
 	position = newCoordinate(0.0, 0.01, 0.0f);
-	scale = newCoordinate(6.8f, 6.8f, 0.1008f);
+	scale = newCoordinate(6.8f, 6.8f, 0.9003f);
 	rotation = newRotation(-90.0f, 90.0f, 0.0f, 0.0f);
 	drawCube(colorPalette[6], CUBE_SIZE, rotation, position, scale);
 
@@ -344,10 +344,10 @@ void RenderScene(void){
 
 	createTower(pObj, 0.3f, 2.0f, newCoordinate(0.0, 0.0, 0.0), true);
 
-    createTower(pObj, 0.185f, 1.25f, newCoordinate(0.35f, 0.0, 0.35f), false);
-    createTower(pObj, 0.185f, 1.25f, newCoordinate(-0.35f, 0.0, 0.35f), false);
-    createTower(pObj, 0.185f, 1.25f, newCoordinate(0.35f, 0.0, -0.35f), false);
-    createTower(pObj, 0.185f, 1.25f, newCoordinate(-0.35f, 0.0, -0.3f), false);
+    createTower(pObj, 0.185f, 1.25f, newCoordinate(0.325f, 0.0, 0.325f), false);
+    createTower(pObj, 0.185f, 1.25f, newCoordinate(-0.325f, 0.0, 0.325f), false);
+    createTower(pObj, 0.185f, 1.25f, newCoordinate(0.325f, 0.0, -0.325f), false);
+    createTower(pObj, 0.185f, 1.25f, newCoordinate(-0.325f, 0.0, -0.325f), false);
 
     // Create walls
     drawSideWall(90.0,90.0, -1, 0.0, 0);
