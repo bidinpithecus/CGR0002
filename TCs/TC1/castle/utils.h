@@ -1,6 +1,7 @@
 #ifndef _utils_h_
 #define _utils_h_
 
+#include <stdio.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -59,11 +60,11 @@ bool isPointInsideOfCircle(float, Coordinate);
 
 int randomNum(int, int);
 
+void colorRgb(int);
 void drawCube(int color, double size, Rotation rotation, Coordinate position, Coordinate scale);
 void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Coordinate position);
 void drawDisk(int color, Disk disk, Rotation rotation, Coordinate position);
 void drawSphere(int, Sphere sphere, Coordinate position);
-void fillDome(GLUquadric* quadric, GLfloat radius);
 
 Cylinder newCylinder(GLUquadric*, GLdouble, GLdouble, GLdouble, GLint, GLint);
 Disk newDisk(GLUquadric*, GLdouble, GLdouble, GLint, GLint);

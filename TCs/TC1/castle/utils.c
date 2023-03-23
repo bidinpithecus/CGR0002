@@ -1,28 +1,31 @@
 #include "utils.h"
 
-void drawCube(int color, double size, Rotation rotation, Coordinate position, Coordinate scale) {
+void colorRgb(int color) {
 	Rgb color3f = hexTo3f(color);
 
+	glColor3f(color3f.red, color3f.green, color3f.blue);
+}
+
+void drawCube(int color, double size, Rotation rotation, Coordinate position, Coordinate scale) {
 	// save transform matrix state
 	glPushMatrix();
-	glColor3f(color3f.red, color3f.green, color3f.blue);
+	colorRgb(color);
 	// setting position in screen
 	glTranslatef(position.x, position.y, position.z);
 	// setting rotation in screen
 	glRotatef(rotation.angle, rotation.x, rotation.y, rotation.z);
 	// setting the disk itself
 	glScalef(scale.x, scale.y, scale.z);
+
 	glutSolidCube(size);
 	// restore transform matrix state
 	glPopMatrix();
 }
 
 void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Coordinate position) {
-	Rgb color3f = hexTo3f(color);
-
 	// save transform matrix state
 	glPushMatrix();
-	glColor3f(color3f.red, color3f.green, color3f.blue);
+	colorRgb(color);
 	// setting position in screen
 	glTranslatef(position.x, position.y, position.z);
 	// setting rotation in screen
@@ -34,11 +37,9 @@ void drawCylinder(int color, Cylinder cylinder, Rotation rotation, Coordinate po
 }
 
 void drawDisk(int color, Disk disk, Rotation rotation, Coordinate position) {
-	Rgb color3f = hexTo3f(color);
-
 	// save transform matrix state
 	glPushMatrix();
-	glColor3f(color3f.red, color3f.green, color3f.blue);
+	colorRgb(color);
 	// setting position in screen
 	glTranslatef(position.x, position.y, position.z);
 	// setting rotation in screen
@@ -50,12 +51,9 @@ void drawDisk(int color, Disk disk, Rotation rotation, Coordinate position) {
 }
 
 void drawSphere(int color, Sphere sphere, Coordinate position) {
-	Rgb color3f = hexTo3f(color);
-	
 	// save transform matrix state
 	glPushMatrix();
-	// setting the color that goes [0, 1]
-	glColor3f(color3f.red, color3f.green, color3f.blue);
+	colorRgb(color);
 	// setting position in screen
 	glTranslatef(position.x, position.y, position.z);
 	// setting the sphere itself
