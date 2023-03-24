@@ -152,6 +152,8 @@ void drawCable(GLUquadricObj* quadObj, float base, float yPosition, float rightS
 	rotation.angle = +90.0;
 	position.y /= 1.05;
 	drawDisk(colorPalette[2], disk, rotation, position);
+
+	drawRobot(position, factoryHeight / 4);
 }
 
 void drawFactory(GLfloat base, GLfloat height) {
@@ -221,21 +223,77 @@ void drawFactory(GLfloat base, GLfloat height) {
 	drawCable(quadObj, base, beamsY, 0.75, 1);
 }
 
-void drawRobot(float totalHeight) {
-	// Defining and initializing robot parts
-	GLUquadricObj* robotParts[NUM_PARTS_ROBOT];
-	for (int i = 0; i < NUM_PARTS_ROBOT; i++) {
-		robotParts[i] = gluNewQuadric();
-		gluQuadricNormals(robotParts[i], GLU_SMOOTH);
+Robot initRobot(int numOfParts, float height) {
+	Robot robot;
+	robot.numOfParts = numOfParts;
+	robot.height = height;
+	robot.parts = malloc(sizeof(Part) * robot.numOfParts);
+
+	for (int i = 0; i < robot.numOfParts; i++) {
+		robot.parts[i].rotation = newRotation(0, 0, 0, 0);
+		robot.parts[i].part = gluNewQuadric();
+		gluQuadricNormals(robot.parts[i].part, GLU_SMOOTH);
 	}
-	// head is one eighth of total body
-	GLfloat headRadius = (totalHeight * (1.0 / 8.0)) / 2;
+
+	return robot;
+}
+
+void drawRobot(Coordinate position, float height) {
+	// Defining and initializing robot parts
+	Robot robot = initRobot(10, height);
+	// head is eigth times minor of total body
+	float headMult = 1.0 / 9.0;
+	float bodyMult = 4.0 / 9.0;
+	float legMult = 1 - (headMult + bodyMult);
+	float legPosMult;
+
+	float armMult = legMult * 1.25;
+	float armPosMult;
+
+	GLfloat headRadius = (height * headMult) / 2;
+	GLfloat legThickness = legMult * 0.2f;
+	GLfloat armThickness = legMult * 0.2f;
 
 	// head
-	position = newCoordinate(0, 0, 0);
-	sphere = newSphere(robotParts[HEAD], headRadius, 26, 13);
+	sphere = newSphere(robot.parts[HEAD].part, headRadius, 26, 13);
+	position.y -= (headRadius * 0.85);
 	drawSphere(colorPalette[4], sphere, position);
 
+	// body
+	scale = newCoordinate(height * bodyMult * 0.6, height * bodyMult * 0.3, height * bodyMult);
+	position.y -= (sphere.radius + (scale.z * 0.225));
+	drawCube(colorPalette[4], CUBE_SIZE, rotation, position, scale);
+
+	// legs
+	cylinder = newCylinder(robot.parts[RIGHT_LEG].part, legThickness, legThickness, height * (legMult * 0.5f), 26, 13);
+	legPosMult = (scale.x * (legMult * 0.25));
+	position.x -= legPosMult;
+	position.y -= (scale.z * 0.25f);
+	drawCylinder(colorPalette[4], cylinder, rotation, position);
+
+	position.x += (legPosMult * 2);
+	cylinder.quad = robot.parts[LEFT_LEG].part;
+	drawCylinder(colorPalette[4], cylinder, rotation, position);
+
+	// arms
+	cylinder = newCylinder(robot.parts[RIGHT_ARM].part, armThickness, armThickness, height * (armMult * 0.45f), 26, 13);
+	armPosMult = (scale.x * (0.425));
+	position.x -= armPosMult;
+	position.y += (scale.z * 0.5);
+	drawCylinder(colorPalette[4], cylinder, rotation, position);
+
+	rotation.angle = -90.0;
+	disk.outer = cylinder.base;
+	drawDisk(colorPalette[4], disk, rotation, position);
+
+	rotation.angle = 90.0;
+	position.x += armPosMult * 1.475;
+	drawCylinder(colorPalette[4], cylinder, rotation, position);
+
+	rotation.angle = -90.0;
+	disk.outer = cylinder.base;
+	drawDisk(colorPalette[4], disk, rotation, position);
+	rotation.angle = 0.0;
 }
 
 
@@ -266,7 +324,6 @@ void RenderScene(void) {
 
 
 	drawFactory(factoryBase, factoryHeight);
-	drawRobot(factoryHeight / 4);
 
 
     glPopMatrix();  
@@ -276,9 +333,6 @@ void RenderScene(void) {
 }
 
 int main(int argc, char *argv[]) {
-	float factoryBase = 1.0f;
-	float factoryHeight = 20.0f;
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);

@@ -2,6 +2,7 @@
 #define _castle_h_
 
 #include "utils.h"
+#include <GL/glu.h>
 
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 600
@@ -20,7 +21,16 @@
 #define LEFT_LEG 8
 #define RIGHT_LEG 9
 
-#define NUM_PARTS_ROBOT 10
+typedef struct Part {
+	Rotation rotation;
+	GLUquadricObj* part;
+} Part;
+
+typedef struct Robot {
+	int numOfParts;
+	float height;
+	Part* parts;
+} Robot;
 
 // Define the camera position and orientation
 static GLfloat cameraPosition[3] = {0.0f, 1.6f, 5.0f};
@@ -28,7 +38,6 @@ static GLfloat cameraDirection[3] = {0.0f, 0.0f, -1.0f};
 static GLfloat cameraUp[3] = {0.0f, 1.0f, 0.0f};
 static GLfloat cameraSpeed = 0.2f;
 static GLfloat zoom = -9.0f;
-static GLUquadricObj* robotParts[10] = {};
 
 const int colorPalette[] = { 	
 	// Foundation Pieces
@@ -40,7 +49,7 @@ const int colorPalette[] = {
 	// Grass
 	0x135000,
 	// Robot
-	0x417676
+	0x334d5c
 };
 
 const double factoryHeight = 20.0f;
@@ -48,7 +57,6 @@ const double factoryBase = 1.0f;
 
 static Rotation rotation;
 static Coordinate position;
-static Coordinate coordinate;
 static Coordinate scale;
 
 static Cylinder cylinder;
@@ -67,6 +75,9 @@ void RenderScene(void);
 
 void drawFactory(GLfloat base, GLfloat height);
 void drawCable(GLUquadricObj* quadObj, float base, float yPosition, float rightShift, float forwardShift);
+void drawRobot(Coordinate position, float height);
+
+Robot initRobot(int numOfParts, float height);
 
 int main(int, char*[]);
 
