@@ -1,6 +1,5 @@
 #include "robot.h"
 #include "utils.h"
-#include <GL/gl.h>
 #include <GL/glu.h>
 
 // Change viewing volume and viewport.  Called when window is resized
@@ -134,10 +133,34 @@ void SpecialKeys(int key, int x, int y) {
 	glutPostRedisplay();
 }
 
+void drawCable(GLUquadricObj* quadObj, float base, float yPosition, float rightShift, float forwardShift) {
+	float height = (yPosition + (base / 4)) * 3;
+	float wireSizeMult = 0.35;
+
+	position = newCoordinate(rightShift * height / 8, yPosition - (base / 4), forwardShift * height / 8);
+	rotation = newRotation(90, 1, 0, 0);
+	cylinder = newCylinder(quadObj, base * 0.05, base * 0.05, yPosition * wireSizeMult, 26, 13);
+	drawCylinder(colorPalette[1], cylinder, rotation, position);
+
+	position.y = (yPosition * (1 - wireSizeMult)) - (base / 4);
+	cylinder = newCylinder(quadObj, base * 0.25, base * 0.25, position.y * 0.05, 26, 13);
+	drawCylinder(colorPalette[2], cylinder, rotation, position);
+
+	rotation.angle = -90.0;
+	disk = newDisk(quadObj, 0.0, base * 0.25, 1000, 10);
+	drawDisk(colorPalette[2], disk, rotation, position);
+	rotation.angle = +90.0;
+	position.y /= 1.05;
+	drawDisk(colorPalette[2], disk, rotation, position);
+}
+
 void drawFactory(GLfloat base, GLfloat height) {
 	GLUquadricObj* quadObj;
 	rotation = newRotation(0.0, 0.0, 0.0, 0.0);
-	float beamY = (height / 3) - (base / 4);
+	float beamsY = (height / 3) - (base / 4);
+
+	quadObj = gluNewQuadric();
+	gluQuadricNormals(quadObj, GLU_SMOOTH);
 
 	// floor and ceiling
 	position = newCoordinate(0.0, 0.0f, 0.0);
@@ -149,22 +172,22 @@ void drawFactory(GLfloat base, GLfloat height) {
 	// grass
 	position.x = height / 2;
 	position.y = 0;
-	drawCube(colorPalette[7], CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[3], CUBE_SIZE, rotation, position, scale);
 	position.x = -height / 2;
 	position.y = 0;
-	drawCube(colorPalette[7], CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[3], CUBE_SIZE, rotation, position, scale);
 	position.x = height / 2;
 	position.y = 0;
 	position.z = -height / 2;
-	drawCube(colorPalette[7], CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[3], CUBE_SIZE, rotation, position, scale);
 	position.x = -height / 2;
 	position.y = 0;
 	position.z = -height / 2;
-	drawCube(colorPalette[7], CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[3], CUBE_SIZE, rotation, position, scale);
 	position.x = 0;
 	position.y = 0;
 	position.z = -height / 2;
-	drawCube(colorPalette[7], CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[3], CUBE_SIZE, rotation, position, scale);
 
 	// side walls
 	position = newCoordinate((-height / 4) + (base / 4), (height / 4) - (base / 4), 0.0);
@@ -181,17 +204,38 @@ void drawFactory(GLfloat base, GLfloat height) {
 	// beams
 	position = newCoordinate(0, (height / 3) - (base / 4), 0.0);
 	scale = newCoordinate((height) * 0.99f, base, base);
-	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[2], CUBE_SIZE, rotation, position, scale);
 	position.z = height / 8;
-	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[2], CUBE_SIZE, rotation, position, scale);
 	position.z = -height / 8;
-	drawCube(colorPalette[0], CUBE_SIZE, rotation, position, scale);
+	drawCube(colorPalette[2], CUBE_SIZE, rotation, position, scale);
 
 	// wires
+	drawCable(quadObj, base, beamsY, -0.75, -1);
+	drawCable(quadObj, base, beamsY, 0.75, -1);
+
+	drawCable(quadObj, base, beamsY, -0.75, 0);
+	drawCable(quadObj, base, beamsY, 0.75, 0);
+
+	drawCable(quadObj, base, beamsY, -0.75, 1);
+	drawCable(quadObj, base, beamsY, 0.75, 1);
+}
+
+void drawRobot(float totalHeight) {
+	// Defining and initializing robot parts
+	GLUquadricObj* robotParts[NUM_PARTS_ROBOT];
+	for (int i = 0; i < NUM_PARTS_ROBOT; i++) {
+		robotParts[i] = gluNewQuadric();
+		gluQuadricNormals(robotParts[i], GLU_SMOOTH);
+	}
+	// head is one eighth of total body
+	GLfloat headRadius = (totalHeight * (1.0 / 8.0)) / 2;
+
+	// head
 	position = newCoordinate(0, 0, 0);
-	rotation = newRotation(0, 0, 0, 0);
-	cylinder = newCylinder(quadObj, 0, 0, 0, 26, 13);
-	// drawCylinder(colorPalette[1], cylinder, rotation, position);
+	sphere = newSphere(robotParts[HEAD], headRadius, 26, 13);
+	drawSphere(colorPalette[4], sphere, position);
+
 }
 
 
@@ -222,6 +266,7 @@ void RenderScene(void) {
 
 
 	drawFactory(factoryBase, factoryHeight);
+	drawRobot(factoryHeight / 4);
 
 
     glPopMatrix();  

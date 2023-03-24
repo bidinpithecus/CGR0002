@@ -8,31 +8,39 @@
 
 #define CUBE_SIZE 0.5f
 
+// Robot parts
+#define HEAD 0
+#define BODY 1
+#define LEFT_ELBOW 2
+#define RIGHT_ELBOW 3
+#define LEFT_ARM 4
+#define RIGHT_ARM 5
+#define LEFT_KNEE 6
+#define RIGHT_KNEE 7
+#define LEFT_LEG 8
+#define RIGHT_LEG 9
+
+#define NUM_PARTS_ROBOT 10
+
 // Define the camera position and orientation
-static GLfloat cameraPosition[3] = {0.0f, 0.0f, 5.0f};
+static GLfloat cameraPosition[3] = {0.0f, 1.6f, 5.0f};
 static GLfloat cameraDirection[3] = {0.0f, 0.0f, -1.0f};
 static GLfloat cameraUp[3] = {0.0f, 1.0f, 0.0f};
 static GLfloat cameraSpeed = 0.2f;
+static GLfloat zoom = -9.0f;
+static GLUquadricObj* robotParts[10] = {};
 
 const int colorPalette[] = { 	
-	// Walls
+	// Foundation Pieces
 	0x5A5A5A,
-	// Roof
-	0xDC5539,
-	// Flag
-	0x5E3C99,
-	// Flag Haste
+	// Wires
 	0x000000,
-	// Tree
-	0x765C48,
-	// Leaves
-	0x2E8D36,
-	// Mud
-	0x261c06,
+	// Beams
+	0x303030,
 	// Grass
 	0x135000,
-	// Water
-	0x010D14
+	// Robot
+	0x417676
 };
 
 const double factoryHeight = 20.0f;
@@ -44,12 +52,12 @@ static Coordinate coordinate;
 static Coordinate scale;
 
 static Cylinder cylinder;
+static Disk disk;
+static Sphere sphere;
 
 // Rotation
 static GLfloat xRot = 0.0f;
 static GLfloat yRot = 0.0f;
-// Camera
-static GLfloat zoom = -5.0f;
 
 // Change viewing volume and viewport.  Called when window is resized  
 void ChangeSize(int, int);
@@ -58,6 +66,7 @@ void SpecialKeys(int, int, int);
 void RenderScene(void);
 
 void drawFactory(GLfloat base, GLfloat height);
+void drawCable(GLUquadricObj* quadObj, float base, float yPosition, float rightShift, float forwardShift);
 
 int main(int, char*[]);
 
