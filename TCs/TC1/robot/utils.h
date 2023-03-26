@@ -70,7 +70,7 @@ void rotate(Rotation rotation);
 
 Cylinder newCylinder(GLUquadric* quad, GLdouble base, GLdouble top, GLdouble height, GLint slices, GLint stacks);
 Disk newDisk(GLUquadric* quad, GLdouble inner, GLdouble outer, GLint slices, GLint loops);
-Sphere newSphere(GLUquadric*, GLdouble, GLint, GLint);
+Sphere newSphere(GLUquadric* quad, GLdouble radius, GLint slices, GLint stacks);
 Coordinate newCoordinate(GLfloat x, GLfloat y, GLfloat z);
 Rotation newRotation(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
 

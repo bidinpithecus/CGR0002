@@ -57,12 +57,12 @@ void keyboardCallback(unsigned char key, int x, int y) {
 		case 'z':
 			zoom -= cameraSpeed * 2;
 			break;
-		
+
 		// Zoom in when the "z" key is pressed
 		case 'Z':
 			zoom += cameraSpeed * 2;
 			break;
-		
+
         // Exit the program when the "ESC" key is pressed
         case 27:
             exit(0);
@@ -80,9 +80,9 @@ void SetupRC() {
 	GLfloat sourceLight[] = { 0.25f, 0.25f, 0.25f, 1.0f };
 	GLfloat lightPos[] = { -10.f, 5.0f, 5.0f, 1.0f };
 
-	glEnable(GL_DEPTH_TEST);  // Hidden surface removal  
-	glFrontFace(GL_CCW);      // Counter clock-wise polygons face out  
-	glEnable(GL_CULL_FACE);// Do not calculate inside  
+	glEnable(GL_DEPTH_TEST);  // Hidden surface removal
+	glFrontFace(GL_CCW);      // Counter clock-wise polygons face out
+	glEnable(GL_CULL_FACE);// Do not calculate inside
 
 	// Enable lighting
 	glEnable(GL_LIGHTING);
@@ -96,7 +96,7 @@ void SetupRC() {
 
 	// Enable color tracking
 	glEnable(GL_COLOR_MATERIAL);
-	
+
 	// Set Material properties to follow glColor values
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
@@ -128,7 +128,7 @@ void SpecialKeys(int key, int x, int y) {
 
 	xRot = (GLfloat)((const int)xRot % 360);
 	yRot = (GLfloat)((const int)yRot % 360);
-	
+
 	// Refresh the Window
 	glutPostRedisplay();
 }
@@ -153,7 +153,7 @@ void drawCable(GLUquadricObj* quadObj, float base, float yPosition, float rightS
 	position.y /= 1.05;
 	drawDisk(colorPalette[2], disk, rotation, position);
 
-	drawRobot(position, factoryHeight / 4);
+	drawRobot(position, colorPalette[4], factoryHeight / 4);
 }
 
 void drawFactory(GLfloat base, GLfloat height) {
@@ -238,9 +238,20 @@ Robot initRobot(int numOfParts, float height) {
 	return robot;
 }
 
-void drawRobot(Coordinate position, float height) {
+void drawHand(Robot robot, Coordinate position, float size, int color, int side) {
+	sphere = newSphere(robot.parts[LEFT_HAND].part, size * 1.25, 26, 13);
+	if (side == RIGHT) {
+		sphere.quad = robot.parts[RIGHT_HAND].part;
+	}
+
+	position.y -= sphere.radius * 0.75;
+	drawSphere(color, sphere, position);
+}
+
+void drawRobot(Coordinate position, int color, float height) {
 	// Defining and initializing robot parts
-	Robot robot = initRobot(10, height);
+	Robot robot = initRobot(14, height);
+
 	// head is eigth times minor of total body
 	float headMult = 1.0 / 9.0;
 	float bodyMult = 4.0 / 9.0;
@@ -252,52 +263,81 @@ void drawRobot(Coordinate position, float height) {
 
 	GLfloat headRadius = (height * headMult) / 2;
 	GLfloat legThickness = legMult * 0.2f;
-	GLfloat armThickness = legMult * 0.2f;
+	GLfloat armThickness = armMult * 0.15f;
+
+	Coordinate headPosition = position;
 
 	// head
 	sphere = newSphere(robot.parts[HEAD].part, headRadius, 26, 13);
 	position.y -= (headRadius * 0.85);
-	drawSphere(colorPalette[4], sphere, position);
+	drawSphere(color, sphere, position);
+
+	// eyes
+	sphere.quad = robot.parts[EYES].part;
+	sphere.radius = headRadius * 0.11f;
+	headPosition.y -= headRadius * 0.5;
+	headPosition.y -= sphere.radius;
+	headPosition.x -= sphere.radius * 3.9;
+	headPosition.z += headRadius * 0.9;
+	drawSphere(0x000000, sphere, headPosition);
+
+	headPosition.x += sphere.radius * 7.8;
+	drawSphere(0x000000, sphere, headPosition);
 
 	// body
 	scale = newCoordinate(height * bodyMult * 0.6, height * bodyMult * 0.3, height * bodyMult);
-	position.y -= (sphere.radius + (scale.z * 0.225));
-	drawCube(colorPalette[4], CUBE_SIZE, rotation, position, scale);
+	position.y -= (headRadius + (scale.z * 0.225));
+	drawCube(color, CUBE_SIZE, rotation, position, scale);
 
 	// legs
 	cylinder = newCylinder(robot.parts[RIGHT_LEG].part, legThickness, legThickness, height * (legMult * 0.5f), 26, 13);
 	legPosMult = (scale.x * (legMult * 0.25));
 	position.x -= legPosMult;
 	position.y -= (scale.z * 0.25f);
-	drawCylinder(colorPalette[4], cylinder, rotation, position);
+	drawCylinder(color, cylinder, rotation, position);
+
+	rotation.angle = -90;
+	drawDisk(color, newDisk(robot.parts[RIGHT_LEG].part, 0.0f, cylinder.base, 26, 13), rotation, position);
+	rotation.angle = 90;
+	drawDisk(color, newDisk(robot.parts[RIGHT_LEG].part, 0.0f, cylinder.base, 26, 13), rotation, newCoordinate(position.x, position.y - cylinder.height, position.z));
 
 	position.x += (legPosMult * 2);
 	cylinder.quad = robot.parts[LEFT_LEG].part;
-	drawCylinder(colorPalette[4], cylinder, rotation, position);
+	drawCylinder(color, cylinder, rotation, position);
+
+	rotation.angle = -90;
+	drawDisk(color, newDisk(robot.parts[LEFT_LEG].part, 0.0f, cylinder.base, 26, 13), rotation, position);
+	rotation.angle = 90;
+	drawDisk(color, newDisk(robot.parts[LEFT_LEG].part, 0.0f, cylinder.base, 26, 13), rotation, newCoordinate(position.x, position.y - cylinder.height, position.z));
 
 	// arms
 	cylinder = newCylinder(robot.parts[RIGHT_ARM].part, armThickness, armThickness, height * (armMult * 0.45f), 26, 13);
 	armPosMult = (scale.x * (0.425));
 	position.x -= armPosMult;
 	position.y += (scale.z * 0.5);
-	drawCylinder(colorPalette[4], cylinder, rotation, position);
+	drawCylinder(color, cylinder, rotation, position);
 
-	rotation.angle = -90.0;
-	disk.outer = cylinder.base;
-	drawDisk(colorPalette[4], disk, rotation, position);
+	rotation.angle = -90;
+	drawDisk(color, newDisk(robot.parts[RIGHT_ARM].part, 0.0f, cylinder.base, 26, 13), rotation, position);
+	rotation.angle = 90;
+	drawDisk(color, newDisk(robot.parts[RIGHT_ARM].part, 0.0f, cylinder.base, 26, 13), rotation, newCoordinate(position.x, position.y - cylinder.height, position.z));
+
+	drawHand(robot, newCoordinate(position.x, position.y - cylinder.height, position.z), color, armThickness, RIGHT);
 
 	rotation.angle = 90.0;
 	position.x += armPosMult * 1.475;
-	drawCylinder(colorPalette[4], cylinder, rotation, position);
+	cylinder.quad = robot.parts[LEFT_ARM].part;
+	drawCylinder(color, cylinder, rotation, position);
 
-	rotation.angle = -90.0;
-	disk.outer = cylinder.base;
-	drawDisk(colorPalette[4], disk, rotation, position);
-	rotation.angle = 0.0;
+	rotation.angle = -90;
+	drawDisk(color, newDisk(robot.parts[LEFT_ARM].part, 0.0f, cylinder.base, 26, 13), rotation, position);
+	rotation.angle = 90;
+	drawDisk(color, newDisk(robot.parts[LEFT_ARM].part, 0.0f, cylinder.base, 26, 13), rotation, newCoordinate(position.x, position.y - cylinder.height, position.z));
+
+	drawHand(robot, newCoordinate(position.x, position.y - cylinder.height, position.z), color, armThickness, LEFT);
 }
 
-
-// Called to draw scene  
+// Called to draw scene
 void RenderScene(void) {
 	// Quadric Object
 	GLUquadricObj *pObj;
@@ -322,14 +362,12 @@ void RenderScene(void) {
 	glRotatef(yRot, 1.0f, 0.0f, 0.0f);
 	glRotatef(xRot, 0.0f, 1.0f, 0.0f);
 
-
 	drawFactory(factoryBase, factoryHeight);
 
+    glPopMatrix();
 
-    glPopMatrix();  
-  
-    // Buffer swap  
-    glutSwapBuffers();  
+    // Buffer swap
+    glutSwapBuffers();
 }
 
 int main(int argc, char *argv[]) {
@@ -344,5 +382,5 @@ int main(int argc, char *argv[]) {
 	SetupRC();
 	glutMainLoop();
 
-	return 0; 
+	return 0;
 }
