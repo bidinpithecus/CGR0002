@@ -5,6 +5,7 @@ CApp::CApp() {
 	isRunning = true;
 	pWindow = NULL;
 	pRenderer = NULL;
+	glContext = NULL;
 }
 
 bool CApp::OnInit(int width, int height) {
@@ -14,8 +15,15 @@ bool CApp::OnInit(int width, int height) {
 
 	pWindow = SDL_CreateWindow("Particles", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+
 	if (pWindow != NULL) {
 		pRenderer = SDL_CreateRenderer(pWindow, -1, 0);
+		glContext = SDL_GL_CreateContext(pWindow);
+
 	} else {
 		return false;
 	}
@@ -61,10 +69,14 @@ void CApp::OnRender() {
 	SDL_RenderClear(pRenderer);
 
 	SDL_RenderPresent(pRenderer);
+	if (pWindow != NULL) {
+		SDL_GL_SwapWindow(pWindow);
+	}
 }
 
 void CApp::OnExit() {
 	SDL_DestroyRenderer(pRenderer);
+	SDL_GL_DeleteContext(glContext);
 	SDL_DestroyWindow(pWindow);
 	pWindow = NULL;
 	SDL_Quit();

@@ -15,8 +15,9 @@ class CApp {
 
 	private:
 		bool isRunning;
-		SDL_Window* pWindow;
+		SDL_GLContext glContext;
 		SDL_Renderer* pRenderer;
+		SDL_Window* pWindow;
 
 };
 

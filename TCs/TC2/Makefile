@@ -1,14 +1,27 @@
+# Vars
+LINKTARGET = main
+
 CC = g++
+
 CFLAGS = -Wall -Wextra -std=c++17
+
 LDFLAGS = -lGL -lglut -lGLU -lSDL2 -lm
-OBJECTS = src/CApp.o src/main.o
-BINARYS = *.out
 
-main: $(OBJECTS)
-	@$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LDFLAGS)
+OBJECTS = main.o \
+			CApp.o \
+			$(patsubst %.cpp, %.o,$(wildcard ./particle/*.cpp))
 
-src/%.o: src/%.c
+BINARYS = *.out *.o
+
+REBUILDABLES = $(OBJECTS) $(LINKTARGET)
+
+# Rules
+$(LINKTARGET): $(OBJECTS)
+	@$(CC) -g -o $@ $(OBJECTS) $(LDFLAGS) $(CFLAGS)
+
+%.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 
+.PHONEY:
 clean:
-	@rm -f $(BINARYS) $(OBJECTS)
+	@rm -f $(REBUILDABLES)
