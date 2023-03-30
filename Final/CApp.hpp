@@ -1,9 +1,7 @@
 #ifndef _C_APP_HPP_
 #define _C_APP_HPP_
 
-#include <SDL2/SDL.h>
-#include <iostream>
-#include "particle/Image.hpp"
+#include "rayTracing/Image.hpp"
 
 class CApp {
 	public:

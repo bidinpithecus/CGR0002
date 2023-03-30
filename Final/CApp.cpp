@@ -1,5 +1,4 @@
 #include "CApp.hpp"
-#include <iostream>
 
 // Default constructor
 CApp::CApp(int width, int height) {
@@ -64,7 +63,6 @@ void CApp::OnEvent(SDL_Event* event) {
 		height = event->window.data2;
 
 		image.UpdateSize(width, height);
-		std::cout << "(" << event->window.data1 << ", " << event->window.data2 << ")" << std::endl;
 	}
 	if (event->type == SDL_QUIT) {
 		isRunning = false;

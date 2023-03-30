@@ -1,5 +1,4 @@
 #include "Image.hpp"
-#include <iostream>
 
 Image::Image() {
 	xSize = 0;
