@@ -1,4 +1,5 @@
 #include "CApp.hpp"
+#include <iostream>
 
 // Default constructor
 CApp::CApp(int width, int height) {
@@ -18,21 +19,16 @@ bool CApp::OnInit() {
 
 	pWindow = SDL_CreateWindow("Particles", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
 	if (pWindow != NULL) {
 		pRenderer = SDL_CreateRenderer(pWindow, -1, 0);
-		glContext = SDL_GL_CreateContext(pWindow);
 		image.Initialize(width, height, pRenderer);
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				double red = (static_cast<double>(x) / width) * 255.0;
-				double green = (static_cast<double>(y) / height) * 255.0;
+				double blue = (static_cast<double>(y) / height) * 255.0;
 
-				image.setPixel(x, y, red, green, 0.0);
+				image.setPixel(x, y, red, 0.0, blue);
 			}
 		}
 
@@ -81,16 +77,6 @@ void CApp::OnLoop() {
 void CApp::OnRender() {
 	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
 	SDL_RenderClear(pRenderer);
-	image.Initialize(width, height, pRenderer);
-
-	for (int x = 0; x < width; x++) {
-		for (int y = 0; y < height; y++) {
-			double red = (static_cast<double>(x) / width) * 255.0;
-			double green = (static_cast<double>(y) / height) * 255.0;
-
-			image.setPixel(x, y, red, green, 0.0);
-		}
-	}
 
 	image.Display();
 

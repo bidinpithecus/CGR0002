@@ -1,4 +1,5 @@
 #include "Image.hpp"
+#include <iostream>
 
 Image::Image() {
 	xSize = 0;
@@ -27,6 +28,10 @@ void Image::Initialize(const int xSize, const int ySize, SDL_Renderer *pRenderer
 void Image::UpdateSize(const int xSize, const int ySize) {
 	this->xSize = xSize;
 	this->ySize = ySize;
+
+	matrixRedChannel.resize(this->xSize, std::vector<double>(this->ySize, 0.0));
+	matrixGreenChannel.resize(this->xSize, std::vector<double>(this->ySize, 0.0));
+	matrixBlueChannel.resize(this->xSize, std::vector<double>(this->ySize, 0.0));
 }
 
 void Image::setPixel(const int x, const int y, const double red, const double green, const double blue) {
