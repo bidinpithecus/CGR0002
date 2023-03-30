@@ -9,7 +9,7 @@ LDFLAGS = -lGL -lglut -lGLU -lSDL2 -lm
 
 OBJECTS = main.o \
 			CApp.o \
-			$(patsubst %.cpp, %.o,$(wildcard ./particle/*.cpp))
+			$(patsubst %.cpp, %.o,$(wildcard ./rayTracing/*.cpp))
 
 BINARYS = main \
 			*.out \

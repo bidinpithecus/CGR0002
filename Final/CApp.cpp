@@ -16,7 +16,7 @@ bool CApp::OnInit() {
 		return false;
 	}
 
-	pWindow = SDL_CreateWindow("Particles", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+	pWindow = SDL_CreateWindow("Ray Tracing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
 	if (pWindow != NULL) {
 		pRenderer = SDL_CreateRenderer(pWindow, -1, 0);
@@ -83,7 +83,6 @@ void CApp::OnRender() {
 
 void CApp::OnExit() {
 	SDL_DestroyRenderer(pRenderer);
-	SDL_GL_DeleteContext(glContext);
 	SDL_DestroyWindow(pWindow);
 	pWindow = NULL;
 	SDL_Quit();
