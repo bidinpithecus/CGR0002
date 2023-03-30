@@ -11,7 +11,8 @@ OBJECTS = main.o \
 			CApp.o \
 			$(patsubst %.cpp, %.o,$(wildcard ./particle/*.cpp))
 
-BINARYS = *.out *.o
+BINARYS = main \
+			*.out \
 
 REBUILDABLES = $(OBJECTS) $(LINKTARGET)
 
@@ -24,4 +25,4 @@ $(LINKTARGET): $(OBJECTS)
 
 .PHONEY:
 clean:
-	@rm -f $(REBUILDABLES)
+	@rm -f $(REBUILDABLES) $(BINARYS)
