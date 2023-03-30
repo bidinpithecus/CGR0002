@@ -1,19 +1,25 @@
-#ifndef _C_APP_H_
-#define _C_APP_H_
+#ifndef _C_APP_HPP_
+#define _C_APP_HPP_
 
 #include <SDL2/SDL.h>
+#include <iostream>
+#include "particle/Image.hpp"
 
 class CApp {
 	public:
-		CApp();
+		CApp(int width, int height);
 		int OnExecute();
-		bool OnInit(int width, int height);
+		bool OnInit();
 		void OnEvent(SDL_Event* event);
 		void OnLoop();
 		void OnRender();
 		void OnExit();
 
 	private:
+		Image image;
+		int width;
+		int height;
+
 		bool isRunning;
 		SDL_GLContext glContext;
 		SDL_Renderer* pRenderer;

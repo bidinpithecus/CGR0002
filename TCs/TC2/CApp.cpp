@@ -1,14 +1,17 @@
 #include "CApp.hpp"
 
 // Default constructor
-CApp::CApp() {
+CApp::CApp(int width, int height) {
+	this->width = width;
+	this->height = height;
+
 	isRunning = true;
 	pWindow = NULL;
 	pRenderer = NULL;
 	glContext = NULL;
 }
 
-bool CApp::OnInit(int width, int height) {
+bool CApp::OnInit() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		return false;
 	}
@@ -19,10 +22,19 @@ bool CApp::OnInit(int width, int height) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-
 	if (pWindow != NULL) {
 		pRenderer = SDL_CreateRenderer(pWindow, -1, 0);
 		glContext = SDL_GL_CreateContext(pWindow);
+		image.Initialize(width, height, pRenderer);
+
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				double red = (static_cast<double>(x) / width) * 255.0;
+				double green = (static_cast<double>(y) / height) * 255.0;
+
+				image.setPixel(x, y, red, green, 0.0);
+			}
+		}
 
 	} else {
 		return false;
@@ -32,10 +44,8 @@ bool CApp::OnInit(int width, int height) {
 }
 
 int CApp::OnExecute() {
-	int width = 640;
-	int height = 480;
 	SDL_Event event;
-	if (!OnInit(width, height)) {
+	if (!OnInit()) {
 		return -1;
 	}
 
@@ -54,6 +64,11 @@ int CApp::OnExecute() {
 
 void CApp::OnEvent(SDL_Event* event) {
 	if (event->window.event == SDL_WINDOWEVENT_RESIZED) {
+		width = event->window.data1;
+		height = event->window.data2;
+
+		image.UpdateSize(width, height);
+		std::cout << "(" << event->window.data1 << ", " << event->window.data2 << ")" << std::endl;
 	}
 	if (event->type == SDL_QUIT) {
 		isRunning = false;
@@ -61,17 +76,25 @@ void CApp::OnEvent(SDL_Event* event) {
 }
 
 void CApp::OnLoop() {
-
 }
 
 void CApp::OnRender() {
 	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
 	SDL_RenderClear(pRenderer);
+	image.Initialize(width, height, pRenderer);
+
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			double red = (static_cast<double>(x) / width) * 255.0;
+			double green = (static_cast<double>(y) / height) * 255.0;
+
+			image.setPixel(x, y, red, green, 0.0);
+		}
+	}
+
+	image.Display();
 
 	SDL_RenderPresent(pRenderer);
-	if (pWindow != NULL) {
-		SDL_GL_SwapWindow(pWindow);
-	}
 }
 
 void CApp::OnExit() {

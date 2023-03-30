@@ -2,7 +2,7 @@
 
 int main(int argc, char* argv[]) {
 	argc--, argv--;
-	CApp cApp;
+	CApp cApp = CApp(640, 480);
 
 	return cApp.OnExecute();
 }
