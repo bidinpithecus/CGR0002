@@ -5,13 +5,16 @@ LINKTARGET = main
 # Compiler and linker settings
 CC = g++
 CFLAGS = -Wall -Wextra -std=c++17
-LDFLAGS = -lGL -lSDL2 -ldl
+LDFLAGS = -lGL -lglut -lGLU -ldl
 
 # List of object files to build
 OBJECTS = src/main.o \
           src/CApp.o \
           src/glad.o \
-          src/particle/fireworks.o
+          src/particle/Color.o \
+          src/particle/Firework.o \
+          src/particle/Particle.o \
+          src/particle/Random.o
 
 # List of files to clean
 BINARYS = main \
