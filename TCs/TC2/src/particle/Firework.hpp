@@ -2,14 +2,17 @@
 #define _FIREWORK_HPP_
 
 #include "Particle.hpp"
+#include <vector>
+#include <math.h>
 
-class Firework:public Particle {
+class Firework {
 	public:
 		Firework(int numParticles, double gravity);
-		void initParticle();
+		void initFirework();
 
 	private:
 		int numParticles;
+		std::vector<Particle> fireworks;
 		double gravity;
 };
 
