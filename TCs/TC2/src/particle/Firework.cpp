@@ -1,4 +1,5 @@
 #include "Firework.hpp"
+#include <GL/freeglut_std.h>
 
 Firework::Firework() {
 }
@@ -57,6 +58,7 @@ void Firework::DrawGLScene(GLvoid) {
 	}
 	glEnd();
 
+	glutSwapBuffers();
 	usleep(20000);
 }
 

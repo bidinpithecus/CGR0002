@@ -10,6 +10,7 @@ CApp::CApp(int width, int height, int bitDepth, int numParticles, double gravity
 	this->bitDepth = bitDepth;
 	this->firework = Firework(numParticles, gravity);
 	isRunning = true;
+	isFullScreen = false;
 	window = 0;
 }
 
@@ -32,16 +33,30 @@ void CApp::getOpenGLInfo() {
 	std::cout << "Shading Language: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 }
 
+void CApp::toggleFullScreen() {
+	if (this->isFullScreen) {
+		this->width = 640;
+		this->height = 480;
+		this->isFullScreen = false;
+		int screenCenterX = (glutGet(GLUT_SCREEN_WIDTH) - width) / 2;
+		int screenCenterY = (glutGet(GLUT_SCREEN_HEIGHT) - height) / 2;
+		glutPositionWindow(screenCenterX, screenCenterY);
+		glutReshapeWindow(width, height);
+	} else {
+		glutFullScreen();
+		isFullScreen = true;
+	}
+}
+
 bool CApp::OnInit() {
 	int screenCenterX = (glutGet(GLUT_SCREEN_WIDTH) - this->width) / 2;
 	int screenCenterY = (glutGet(GLUT_SCREEN_HEIGHT) - this->height) / 2;
 
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
-	glutInitWindowSize(this->width, this->height);
 	glutInitWindowPosition(screenCenterX, screenCenterY);
 	window = glutCreateWindow("Firework");
 
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);		// This Will Clear The Background Color To Black
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);		// This Will Clear The Background Color To Black
 	glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
 	glDepthFunc(GL_LESS);				// The Type Of Depth Test To Do
 	glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
@@ -83,7 +98,7 @@ void CApp::Setup() {
 	// Set Material properties to follow glColor values
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 }
 
 int CApp::OnExecute() {
@@ -93,8 +108,8 @@ int CApp::OnExecute() {
 	glutReshapeFunc(CApp::ResizeCallback);
 	glutKeyboardFunc(CApp::NormalKeyCallback);
 	glutSpecialFunc(CApp::SpecialKeyCallback);
-	glutMainLoop();
 	Setup();
+	glutMainLoop();
 
 	OnExit();
 	return 0;
@@ -115,7 +130,6 @@ void CApp::OnResize(int width, int height) {
 	}
 	// Set Viewport to window dimensions
 	glViewport(0, 0, width, height);
-
 	fAspect = (GLfloat)width / (GLfloat)height;
 
 	// Reset coordinate system
@@ -139,6 +153,11 @@ void CApp::OnNormalKeyPressed(unsigned char key, int x, int y) {
 }
 
 void CApp::OnSpecialKeyPressed(int key, int x, int y) {
+	switch (key) {
+		case GLUT_KEY_F11:
+			toggleFullScreen();
+			break;
+	}
 }
 
 void CApp::OnExit() {

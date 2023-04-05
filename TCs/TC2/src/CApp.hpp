@@ -25,6 +25,7 @@ class CApp {
 		void OnResize(int width, int height);
 		void OnExit();
 		void getOpenGLInfo();
+		void toggleFullScreen();
 
 	private:
 		int width;
@@ -34,6 +35,7 @@ class CApp {
 		static CApp* cAppInstance; // static pointer to instance of CApp class
 
 		bool isRunning;
+		bool isFullScreen;
 		int window;
 };
 
