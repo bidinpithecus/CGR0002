@@ -1,4 +1,5 @@
 #include "snowman.h"
+#include "utils.h"
 
 // Define the camera position and orientation
 GLfloat cameraDirection[3] = { 0.0f, 0.0f, -1.0f };
@@ -47,7 +48,7 @@ void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
 void drawScene(void) {
 	Rgb rgbColor;
 	GLUquadricObj *pObj;
-	GLfloat globeRadius = 7.5f;
+	GLfloat globeRadius = 5;
 	GLfloat globeOpening = globeRadius * 0.714285714;
 	GLfloat floorHeight = globeRadius * (0.35);
 	GLfloat floorRadius = sqrt((pow(globeRadius, 2) - pow(floorHeight, 2)));
@@ -55,6 +56,7 @@ void drawScene(void) {
 	GLfloat headY;
 	GLfloat bodyY;
 	GLfloat bodyRadius;
+	GLfloat headRadius;
 
 	double bottomPlane[] = { 0.0, 1.0, 0.0, globeOpening };
 	double topPlane[] = { 0.0, -1.0, 0.0, -floorHeight };
@@ -100,8 +102,9 @@ void drawScene(void) {
 	drawSphere(color, sphere, position);
 
 	// snowman's head
-	sphere = newSphere(pObj, sphere.radius * 0.85, 104, 52);
-	headY = position.y + (sphere.radius * 1.6);
+	headRadius = sphere.radius * 0.85;
+	sphere = newSphere(pObj, headRadius, 104, 52);
+	headY = position.y + (headRadius * 1.6);
 	position.y = headY;
 	drawSphere(color, sphere, position);
 	glassMult = sphere.radius * 0.75;
@@ -109,7 +112,7 @@ void drawScene(void) {
 	position.y += sphere.radius;
 	// snowman's bucket
 	color = 0x261614;
-	cylinder = newCylinder(pObj, sphere.radius * 0.95f, sphere.radius * 1.05f, sphere.radius * 0.6, 50, 150);
+	cylinder = newCylinder(pObj, headRadius * 0.95f, headRadius * 1.05f, headRadius * 0.6, 50, 150);
 	position.y += (cylinder.height / 3);
 	position.y *= 0.95;
 	drawCylinder(color, cylinder, rotation, position);
@@ -126,10 +129,49 @@ void drawScene(void) {
 	color = 0x211412;
 	drawCylinder(color, cylinder, rotation, position);
 
+	// eyes
+	// right
+	color = 0x000000;
+	sphere = newSphere(pObj, headRadius * 0.1, 26, 13);
+	position = newPosition((0.5 * glassMult) - (sphere.radius / 2.0), (headY * (3 / 4.0)) + (0.375 * glassMult) + (sphere.radius / 2.0), headRadius - sphere.radius);
+	drawSphere(color, sphere, position);
+
+	// left
+	position.x *= -1;
+	drawSphere(color, sphere, position);
+
+	// earrings
+	// right
+	color = 0xEDC967;
+	// sphere.radius *= 0.75;
+	position.x = headRadius;
+	position.y -= sphere.radius;
+	position.z = 0;
+	drawSphere(color, sphere, position);
+
+	// left
+	position.x *= -1;
+	drawSphere(color, sphere, position);
+
+	Position neckLacePosition = newPosition((bodyRadius / 10.0) - sphere.radius, bodyY, bodyRadius);
+	// necklace
+	for (int i = 1; i < 10; i++) {
+		position = neckLacePosition;
+		position.x -= (i * 1.15 * sphere.radius);
+		position.y += (i * 1.15 * sphere.radius);
+		color = 0xEDC967;
+		drawSphere(color, sphere, position);
+
+		position = neckLacePosition;
+		position.x += (i * 1.15 * sphere.radius);
+		position.y += (i * 1.15 * sphere.radius);
+		drawSphere(color, sphere, position);
+	}
+
 	// Draw the sunglasses
 	glPushMatrix();
 		rgbColor = hexTo3f(0x601A16);
-		glTranslatef(0, headY * (3 / 4.0), sphere.radius);
+		glTranslatef(0, headY * (3 / 4.0), headRadius);
 		// set the color to black
 		glColor3f(rgbColor.red, rgbColor.green, rgbColor.blue);
 		// set the line width to 2
@@ -189,9 +231,9 @@ void drawScene(void) {
 
 	// Nose
 	color = 0xED9121;
-	cylinder = newCylinder(pObj, sphere.radius * 0.1, 0.0f, sphere.radius * 0.8, 26, 13);
+	cylinder = newCylinder(pObj, headRadius * 0.1, 0.0f, headRadius * 0.8, 26, 13);
 	rotation.angle = 0;
-	position = newPosition(0.0f, headY * 0.975, sphere.radius);
+	position = newPosition(0.0f, headY * 0.975, headRadius);
 	drawCylinder(color, cylinder, rotation, position);
 
 	drawArm(bodyRadius, bodyY, pObj, RIGHT);
