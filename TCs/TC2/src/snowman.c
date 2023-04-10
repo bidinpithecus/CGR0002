@@ -48,7 +48,7 @@ void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
 void drawScene(void) {
 	Rgb rgbColor;
 	GLUquadricObj *pObj;
-	GLfloat globeRadius = 5;
+	GLfloat globeRadius = 3.5;
 	GLfloat globeOpening = globeRadius * 0.714285714;
 	GLfloat floorHeight = globeRadius * (0.35);
 	GLfloat floorRadius = sqrt((pow(globeRadius, 2) - pow(floorHeight, 2)));
@@ -143,7 +143,6 @@ void drawScene(void) {
 	// earrings
 	// right
 	color = 0xEDC967;
-	// sphere.radius *= 0.75;
 	position.x = headRadius;
 	position.y -= sphere.radius;
 	position.z = 0;
@@ -154,17 +153,20 @@ void drawScene(void) {
 	drawSphere(color, sphere, position);
 
 	Position neckLacePosition = newPosition((bodyRadius / 10.0) - sphere.radius, bodyY, bodyRadius);
-	// necklace
+	GLfloat neckLaceXBkp;
+	// necklaceg
 	for (int i = 1; i < 10; i++) {
 		position = neckLacePosition;
-		position.x -= (i * 1.15 * sphere.radius);
-		position.y += (i * 1.15 * sphere.radius);
-		color = 0xEDC967;
+		position.x -= (i * sphere.radius);
+		neckLaceXBkp = position.x;
+		position.y += (i * sphere.radius);
+		position.z = getZOnSurface(bodyRadius, position.x, position.y);
 		drawSphere(color, sphere, position);
 
 		position = neckLacePosition;
-		position.x += (i * 1.15 * sphere.radius);
-		position.y += (i * 1.15 * sphere.radius);
+		position.x += (i * sphere.radius);
+		position.y += (i * sphere.radius);
+		position.z = getZOnSurface(bodyRadius, neckLaceXBkp, position.y);
 		drawSphere(color, sphere, position);
 	}
 

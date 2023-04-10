@@ -47,8 +47,8 @@ void drawSphere(int color, Sphere sphere, Position position) {
 	glPopMatrix();
 }
 
-bool isPointInsideOfCircle(float radius, Position position) {
-	return sqrt(pow(position.x, 2) + pow(position.y, 2) + pow(position.z, 2)) < radius - 0.04;
+GLfloat getZOnSurface(GLfloat radius, GLfloat x, GLfloat y) {
+	return sqrt(fabs(pow(radius, 2) + ((x - y) * (y - x))));
 }
 
 int randomNum(int min, int max) {

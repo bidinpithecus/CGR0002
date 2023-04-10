@@ -53,7 +53,7 @@ typedef struct Sphere {
 
 Rgb hexTo3f(int);
 
-bool isPointInsideOfCircle(float, Position);
+GLfloat getZOnSurface(GLfloat radius, GLfloat x, GLfloat y);
 
 int randomNum(int min, int max);
 
