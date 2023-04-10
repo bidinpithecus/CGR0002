@@ -49,7 +49,8 @@ void drawScene(void) {
 	Rgb rgbColor;
 	GLUquadricObj *pObj;
 	GLfloat globeRadius = 3.5;
-	GLfloat globeOpening = globeRadius * 0.714285714;
+	GLfloat globeOpeningHeight = globeRadius * 0.714285714;
+	GLfloat globeOpeningRadius = sqrt(pow(globeRadius, 2) - pow(globeOpeningHeight, 2));
 	GLfloat floorHeight = globeRadius * (0.35);
 	GLfloat floorRadius = sqrt((pow(globeRadius, 2) - pow(floorHeight, 2)));
 	GLfloat glassMult;
@@ -58,7 +59,7 @@ void drawScene(void) {
 	GLfloat bodyRadius;
 	GLfloat headRadius;
 
-	double bottomPlane[] = { 0.0, 1.0, 0.0, globeOpening };
+	double bottomPlane[] = { 0.0, 1.0, 0.0, globeOpeningHeight };
 	double topPlane[] = { 0.0, -1.0, 0.0, -floorHeight };
 
 	pObj = gluNewQuadric();
@@ -85,8 +86,8 @@ void drawScene(void) {
 		glDisable(GL_CLIP_PLANE1);
 	glPopMatrix();
 
-	position.y = -globeOpening;
-	disk.outer = sqrt((pow(globeRadius, 2) - pow(globeOpening, 2)));
+	position.y = -globeOpeningHeight;
+	disk.outer = sqrt((pow(globeRadius, 2) - pow(globeOpeningHeight, 2)));
 	drawDisk(color, disk, rotation, position);
 
 	// snowman's feet
@@ -154,7 +155,7 @@ void drawScene(void) {
 
 	Position neckLacePosition = newPosition((bodyRadius / 10.0) - sphere.radius, bodyY, bodyRadius);
 	GLfloat neckLaceXBkp;
-	// necklaceg
+	// necklace
 	for (int i = 1; i < 10; i++) {
 		position = neckLacePosition;
 		position.x -= (i * sphere.radius);
@@ -241,6 +242,17 @@ void drawScene(void) {
 	drawArm(bodyRadius, bodyY, pObj, RIGHT);
 	drawArm(bodyRadius, bodyY, pObj, LEFT);
 
+	// floor
+	color = 0xC54245;
+	cylinder = newCylinder(pObj, globeOpeningRadius, globeOpeningRadius * 1.15, floorHeight * 1.1, 50, 150);
+	rotation = newRotation(90.0f, 1.0f, 0.0f, 0.0f);
+	position = newPosition(0.0f, -globeOpeningHeight, 0.0f);
+	drawCylinder(color, cylinder, rotation, position);
+
+	disk = newDisk(pObj, 0.0, cylinder.top, 1000, 10);
+	position.y -= cylinder.height;
+	drawDisk(color, disk, rotation, position);
+
 	// draw the translucent sphere
 	glPushMatrix();
 		glClipPlane(GL_CLIP_PLANE0, bottomPlane);
@@ -256,6 +268,7 @@ void drawScene(void) {
 		glDisable(GL_BLEND);
 		glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
+
 }
 
 int main(int argc, char *argv[]) {
