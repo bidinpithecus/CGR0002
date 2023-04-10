@@ -72,7 +72,7 @@ Rgb hexTo3f(int hexValue) {
 	rgb.green = ((hexValue >> 8) & 0xFF) / 255.0;
 	rgb.blue = ((hexValue) & 0xFF) / 255.0;
 
-	return rgb; 
+	return rgb;
 }
 
 Cylinder newCylinder(GLUquadric* quad, GLdouble base, GLdouble top, GLdouble height, GLint slices, GLint stacks) {

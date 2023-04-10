@@ -14,7 +14,7 @@ static GLfloat cameraDirection[3] = {0.0f, 0.0f, -1.0f};
 static GLfloat cameraUp[3] = {0.0f, 1.0f, 0.0f};
 static GLfloat cameraSpeed = 0.05f;
 
-const int colorPalette[] = { 	
+const int colorPalette[] = {
 	// Walls
 	0x5A5A5A,
 	// Roof
@@ -54,16 +54,16 @@ static GLfloat yRot = 0.0f;
 // Camera
 static GLfloat zoom = -5.0f;
 
-// Change viewing volume and viewport.  Called when window is resized  
+// Change viewing volume and viewport.  Called when window is resized
 void ChangeSize(int, int);
 
-// This function does any needed initialization on the rendering context.  Here it sets up and initializes the lighting for the scene.  
+// This function does any needed initialization on the rendering context.  Here it sets up and initializes the lighting for the scene.
 void SetupRC();
 
 // Respond to arrow keys (rotate castle)
 void SpecialKeys(int, int, int);
 
-// Called to draw scene  
+// Called to draw scene
 void RenderScene(void);
 
 void createTower(GLUquadricObj* quad, GLfloat towerBase, GLfloat towerHeight, Coordinate position, bool hasFlag);

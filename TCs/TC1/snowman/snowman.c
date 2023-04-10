@@ -79,12 +79,12 @@ void keyboardCallback(unsigned char key, int x, int y) {
 		case 'z':
 			zoom -= cameraSpeed * 2;
 			break;
-		
+
 		// Zoom in when the "z" key is pressed
 		case 'Z':
 			zoom += cameraSpeed * 2;
 			break;
-		
+
         // Exit the program when the "ESC" key is pressed
         case 27:
             exit(0);
@@ -288,7 +288,7 @@ void RenderScene(void) {
 
 	// Snowflakes
 	fillDome(pObj, 3.5);
-	
+
 	double plane[] = {0.0, 1.0, 0.0, 0.2};
 	glClipPlane(GL_CLIP_PLANE0, plane);
 	glEnable(GL_CLIP_PLANE0);
@@ -324,18 +324,18 @@ void RenderScene(void) {
 
 	// Buffer swap
 	glutSwapBuffers();
-} 
+}
 
-// This function does any needed initialization on the rendering context.  Here it sets up and initializes the lighting for the scene.  
+// This function does any needed initialization on the rendering context.  Here it sets up and initializes the lighting for the scene.
 void SetupRC() {
 	// Light values and coordinates
 	GLfloat whiteLight[] = { 0.05f, 0.05f, 0.05f, 1.0f };
 	GLfloat sourceLight[] = { 0.25f, 0.25f, 0.25f, 1.0f };
 	GLfloat lightPos[] = { -10.f, 5.0f, 5.0f, 1.0f };
 
-	glEnable(GL_DEPTH_TEST);  // Hidden surface removal  
-	glFrontFace(GL_CCW);      // Counter clock-wise polygons face out  
-	glEnable(GL_CULL_FACE);// Do not calculate inside  
+	glEnable(GL_DEPTH_TEST);  // Hidden surface removal
+	glFrontFace(GL_CCW);      // Counter clock-wise polygons face out
+	glEnable(GL_CULL_FACE);// Do not calculate inside
 
 	// Enable lighting
 	glEnable(GL_LIGHTING);
@@ -349,7 +349,7 @@ void SetupRC() {
 
 	// Enable color tracking
 	glEnable(GL_COLOR_MATERIAL);
-	
+
 	// Set Material properties to follow glColor values
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
@@ -378,10 +378,10 @@ void SpecialKeys(int key, int x, int y) {
 			xRot -= 2.0f;
 			break;
 	}
-	
+
 	xRot = (GLfloat)((const int)xRot % 360);
 	yRot = (GLfloat)((const int)yRot % 360);
-	
+
 	// Refresh the Window
 	glutPostRedisplay();
 }
@@ -402,5 +402,5 @@ int main(int argc, char *argv[]) {
 	SetupRC();
 	glutMainLoop();
 
-	return 0; 
+	return 0;
 }
