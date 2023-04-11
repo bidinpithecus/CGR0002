@@ -3,7 +3,7 @@
 
 #include "utils.h"
 
-#define NUM_OF_PARTICLES 50
+#define NUM_OF_PARTICLES 500
 #define LIFETIME 100
 
 typedef struct Particle {

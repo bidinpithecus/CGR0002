@@ -56,7 +56,7 @@ typedef struct Sphere {
 Rgb hexTo3f(int);
 
 GLfloat generateAnotherCoordinateOnSurface(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord);
-GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat coordSize, GLfloat firstCoord, GLfloat secondCoord);
+GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord);
 
 int randomNum(int min, int max);
 float randomFloat(float min, float max);

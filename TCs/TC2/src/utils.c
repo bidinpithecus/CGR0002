@@ -48,10 +48,10 @@ void drawSphere(int color, Sphere sphere, Position position) {
 }
 
 GLfloat generateAnotherCoordinateOnSurface(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord) {
-	return sqrt(fabs(pow(radius, 2) + ((firstCoord - secondCoord) * (secondCoord - firstCoord))));
+	return sqrt(pow(radius, 2) - pow(firstCoord, 2) - pow(secondCoord, 2));
 }
 
-GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat coordSize, GLfloat firstCoord, GLfloat secondCoord) {
+GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord) {
 	float max = sqrt(pow(radius, 2) - pow(firstCoord, 2) - pow(secondCoord, 2));
 
 	return randomFloat(-max, max);

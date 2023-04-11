@@ -1,5 +1,6 @@
 #include "snowman.h"
 #include "particle.h"
+#include <GL/gl.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
@@ -282,8 +283,6 @@ void drawScene(void) {
 		glDisable(GL_BLEND);
 		glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
-
-    usleep(20000);
 }
 
 int main(int argc, char *argv[]) {
