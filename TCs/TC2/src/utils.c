@@ -51,15 +51,24 @@ GLfloat generateAnotherCoordinateOnSurface(GLfloat radius, GLfloat firstCoord, G
 	return sqrt(fabs(pow(radius, 2) + ((firstCoord - secondCoord) * (secondCoord - firstCoord))));
 }
 
-GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord) {
-	float max = sqrt(pow(radius, 2) + ((firstCoord - secondCoord) * (-firstCoord + secondCoord)));
+GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat coordSize, GLfloat firstCoord, GLfloat secondCoord) {
+	float max = sqrt(pow(radius, 2) - pow(firstCoord, 2) - pow(secondCoord, 2));
 
-	return randomNum(-max, max);
+	return randomFloat(-max, max);
 }
 
 int randomNum(int min, int max) {
 	return (rand() % (max - min + 1)) + min;
 }
+
+float randomFloat(float min, float max) {
+    // Generate a random float between 0 and 1
+    double randomDouble = (double)rand() / RAND_MAX;
+
+    // Scale the random double to the desired range between min and max
+    return min + randomDouble * (max - min);
+}
+
 
 Rgb hexTo3f(int hexValue) {
 	Rgb rgb;

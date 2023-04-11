@@ -32,7 +32,6 @@ Rotation rotation;
 
 Rgb rgbColor;
 GLUquadricObj *pObj;
-GLfloat globeRadius;
 GLfloat globeOpeningHeight;
 GLfloat globeOpeningRadius;
 GLfloat floorHeight;
@@ -42,6 +41,7 @@ GLfloat headY;
 GLfloat bodyY;
 GLfloat bodyRadius;
 GLfloat headRadius;
+GLfloat globeRadius = 3.5;
 
 void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
 	color = 0x4B3621;
@@ -64,7 +64,6 @@ void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
 
 // Called to draw scene
 void drawScene(void) {
-	GLfloat globeRadius = 3.5;
 	GLfloat globeOpeningHeight = globeRadius * 0.714285714;
 	GLfloat globeOpeningRadius = sqrt(pow(globeRadius, 2) - pow(globeOpeningHeight, 2));
 	GLfloat floorHeight = globeRadius * (0.35);
@@ -265,10 +264,8 @@ void drawScene(void) {
 	drawDisk(color, disk, rotation, position);
 
 	glPushMatrix();
-		moveParticles(snow, NUM_OF_PARTICLES, floorHeight);
+		moveParticles(snow, NUM_OF_PARTICLES, globeRadius, -floorHeight);
 	glPopMatrix();
-
-	printParticles(snow, NUM_OF_PARTICLES);
 
 	// draw the translucent sphere
 	glPushMatrix();
@@ -290,6 +287,9 @@ void drawScene(void) {
 }
 
 int main(int argc, char *argv[]) {
+	floorHeight = globeRadius * (0.35);
+    // Seed the random number generator with the current time
+    srand((unsigned int)time(NULL));
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -300,7 +300,7 @@ int main(int argc, char *argv[]) {
 	glutDisplayFunc(renderScene);
 	glutIdleFunc(renderScene);
 	setupRC();
-	generateParticles(snow, NUM_OF_PARTICLES, globeRadius, floorHeight);
+	generateParticles(snow, NUM_OF_PARTICLES, globeRadius, -floorHeight);
 	glutMainLoop();
 
 	return 0;

@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 typedef struct Cylinder {
 	GLUquadric* quad;
@@ -54,9 +56,10 @@ typedef struct Sphere {
 Rgb hexTo3f(int);
 
 GLfloat generateAnotherCoordinateOnSurface(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord);
-GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord);
+GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat coordSize, GLfloat firstCoord, GLfloat secondCoord);
 
 int randomNum(int min, int max);
+float randomFloat(float min, float max);
 
 void drawCylinder(int, Cylinder, Rotation, Position);
 void drawDisk(int, Disk, Rotation, Position);

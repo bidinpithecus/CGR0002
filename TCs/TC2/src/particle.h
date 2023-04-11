@@ -3,7 +3,7 @@
 
 #include "utils.h"
 
-#define NUM_OF_PARTICLES 3000
+#define NUM_OF_PARTICLES 50
 #define LIFETIME 100
 
 typedef struct Particle {
@@ -19,10 +19,11 @@ typedef struct Particle {
 } Particle;
 
 extern Particle snow[NUM_OF_PARTICLES];
+extern GLfloat snowSize;
 
 void generateParticles(Particle* particles, int numOfParticles, GLfloat radius, GLfloat initialY);
 void regenerateParticle(Particle* particles, int index, GLfloat radius, GLfloat initialY);
-void moveParticles(Particle* particles, int numOfParticles, GLfloat ground);
+void moveParticles(Particle* particles, int numOfParticles, GLfloat radius, GLfloat ground);
 void printParticles(Particle* particles, int numOfParticles);
 
 #endif
