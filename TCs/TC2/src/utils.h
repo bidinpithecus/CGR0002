@@ -64,7 +64,7 @@ void drawSphere(int, Sphere, Position);
 Cylinder newCylinder(GLUquadric* quad, GLdouble base, GLdouble top, GLdouble height, GLint slices, GLint stacks);
 Disk newDisk(GLUquadric* quad, GLdouble inner, GLdouble outer, GLint slices, GLint loops);
 Sphere newSphere(GLUquadric*, GLdouble, GLint, GLint);
-Position newPosition(GLfloat, GLfloat, GLfloat);
+Position newPosition(GLfloat x, GLfloat y, GLfloat z);
 Rotation newRotation(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
 
 #endif

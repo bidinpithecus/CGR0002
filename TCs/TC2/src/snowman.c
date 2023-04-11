@@ -1,5 +1,10 @@
 #include "snowman.h"
-#include "utils.h"
+#include "particle.h"
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <math.h>
 
 // Define the camera position and orientation
 GLfloat cameraDirection[3] = { 0.0f, 0.0f, -1.0f };
@@ -253,6 +258,12 @@ void drawScene(void) {
 	position.y -= cylinder.height;
 	drawDisk(color, disk, rotation, position);
 
+	glPushMatrix();
+		moveParticles(particles, NUM_OF_PARTICLES);
+	glPopMatrix();
+
+	printParticles(particles, NUM_OF_PARTICLES);
+
 	// draw the translucent sphere
 	glPushMatrix();
 		glClipPlane(GL_CLIP_PLANE0, bottomPlane);
@@ -269,6 +280,7 @@ void drawScene(void) {
 		glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
 
+    usleep(20000);
 }
 
 int main(int argc, char *argv[]) {
@@ -280,7 +292,9 @@ int main(int argc, char *argv[]) {
 	glutKeyboardFunc(normalKeyPressed);
 	glutSpecialFunc(specialKeyPressed);
 	glutDisplayFunc(renderScene);
+	glutIdleFunc(renderScene);
 	setupRC();
+	generateParticles(particles, NUM_OF_PARTICLES);
 	glutMainLoop();
 
 	return 0;

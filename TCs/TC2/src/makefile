@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99
 LDFLAGS = -lGL -lglut -lGLU -lm
-OBJECTS = snowman.o utils.o app.o
-BINARYS = snowman utils app
+OBJECTS = snowman.o utils.o app.o particle.o
+BINARYS = snowman utils app particle
 
 snowman: $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LDFLAGS)
