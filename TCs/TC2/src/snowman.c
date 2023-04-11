@@ -30,6 +30,19 @@ Sphere sphere;
 Position position;
 Rotation rotation;
 
+Rgb rgbColor;
+GLUquadricObj *pObj;
+GLfloat globeRadius;
+GLfloat globeOpeningHeight;
+GLfloat globeOpeningRadius;
+GLfloat floorHeight;
+GLfloat floorRadius;
+GLfloat glassMult;
+GLfloat headY;
+GLfloat bodyY;
+GLfloat bodyRadius;
+GLfloat headRadius;
+
 void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
 	color = 0x4B3621;
 	GLfloat armSize;
@@ -51,18 +64,11 @@ void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
 
 // Called to draw scene
 void drawScene(void) {
-	Rgb rgbColor;
-	GLUquadricObj *pObj;
 	GLfloat globeRadius = 3.5;
 	GLfloat globeOpeningHeight = globeRadius * 0.714285714;
 	GLfloat globeOpeningRadius = sqrt(pow(globeRadius, 2) - pow(globeOpeningHeight, 2));
 	GLfloat floorHeight = globeRadius * (0.35);
 	GLfloat floorRadius = sqrt((pow(globeRadius, 2) - pow(floorHeight, 2)));
-	GLfloat glassMult;
-	GLfloat headY;
-	GLfloat bodyY;
-	GLfloat bodyRadius;
-	GLfloat headRadius;
 
 	double bottomPlane[] = { 0.0, 1.0, 0.0, globeOpeningHeight };
 	double topPlane[] = { 0.0, -1.0, 0.0, -floorHeight };
@@ -166,13 +172,13 @@ void drawScene(void) {
 		position.x -= (i * sphere.radius);
 		neckLaceXBkp = position.x;
 		position.y += (i * sphere.radius);
-		position.z = getZOnSurface(bodyRadius, position.x, position.y);
+		position.z = generateAnotherCoordinateOnSurface(bodyRadius, position.x, position.y);
 		drawSphere(color, sphere, position);
 
 		position = neckLacePosition;
 		position.x += (i * sphere.radius);
 		position.y += (i * sphere.radius);
-		position.z = getZOnSurface(bodyRadius, neckLaceXBkp, position.y);
+		position.z = generateAnotherCoordinateOnSurface(bodyRadius, neckLaceXBkp, position.y);
 		drawSphere(color, sphere, position);
 	}
 
@@ -259,10 +265,10 @@ void drawScene(void) {
 	drawDisk(color, disk, rotation, position);
 
 	glPushMatrix();
-		moveParticles(particles, NUM_OF_PARTICLES);
+		moveParticles(snow, NUM_OF_PARTICLES, floorHeight);
 	glPopMatrix();
 
-	printParticles(particles, NUM_OF_PARTICLES);
+	printParticles(snow, NUM_OF_PARTICLES);
 
 	// draw the translucent sphere
 	glPushMatrix();
@@ -294,7 +300,7 @@ int main(int argc, char *argv[]) {
 	glutDisplayFunc(renderScene);
 	glutIdleFunc(renderScene);
 	setupRC();
-	generateParticles(particles, NUM_OF_PARTICLES);
+	generateParticles(snow, NUM_OF_PARTICLES, globeRadius, floorHeight);
 	glutMainLoop();
 
 	return 0;

@@ -47,8 +47,14 @@ void drawSphere(int color, Sphere sphere, Position position) {
 	glPopMatrix();
 }
 
-GLfloat getZOnSurface(GLfloat radius, GLfloat x, GLfloat y) {
-	return sqrt(fabs(pow(radius, 2) + ((x - y) * (y - x))));
+GLfloat generateAnotherCoordinateOnSurface(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord) {
+	return sqrt(fabs(pow(radius, 2) + ((firstCoord - secondCoord) * (secondCoord - firstCoord))));
+}
+
+GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord) {
+	float max = sqrt(pow(radius, 2) + ((firstCoord - secondCoord) * (-firstCoord + secondCoord)));
+
+	return randomNum(-max, max);
 }
 
 int randomNum(int min, int max) {

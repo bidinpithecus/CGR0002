@@ -1,17 +1,12 @@
 #include "particle.h"
 
-Particle particles[NUM_OF_PARTICLES];
+Particle snow[NUM_OF_PARTICLES];
 
-GLfloat initX = 0;
-GLfloat initY = 0;
-GLfloat initZ = 0;
-GLfloat ground = 0;
-
-void generateParticles(Particle* particles, int numOfParticles) {
+void generateParticles(Particle* particles, int numOfParticles, GLfloat radius, GLfloat initialY) {
 	for (int i = 0; i < numOfParticles; i++) {
-		(&particles[i])->x = initX;
-		(&particles[i])->y = initY;
-		(&particles[i])->z = initZ;
+		(&particles[i])->x = randomNum(-radius, radius);
+		(&particles[i])->y = initialY;
+		(&particles[i])->z = generateCoordinateInsideSphere(radius, (&particles[i])->x, (&particles[i])->y);
 
 		(&particles[i])->xVelocity = 0;
 		(&particles[i])->yVelocity = 0.1f;
@@ -21,10 +16,10 @@ void generateParticles(Particle* particles, int numOfParticles) {
 	}
 }
 
-void regenerateParticle(Particle* particles, int index) {
-	(&particles[index])->x = initX;
-	(&particles[index])->y = initY;
-	(&particles[index])->z = initZ;
+void regenerateParticle(Particle* particles, int index, GLfloat radius, GLfloat initialY) {
+	(&particles[index])->x = randomNum(-radius, radius);
+	(&particles[index])->y = initialY;
+	(&particles[index])->z = generateCoordinateInsideSphere(radius, (&particles[index])->x, (&particles[index])->y);
 
 	(&particles[index])->xVelocity = 0;
 	(&particles[index])->yVelocity = 0.1f;
@@ -39,7 +34,7 @@ void printParticles(Particle* particles, int numOfParticles) {
 	}
 }
 
-void moveParticles(Particle* particles, int numOfParticles) {
+void moveParticles(Particle* particles, int numOfParticles, GLfloat ground) {
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
 	glColor3f(1.0f, 1.0f, 1.0f);

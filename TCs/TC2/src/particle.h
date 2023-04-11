@@ -18,16 +18,11 @@ typedef struct Particle {
 	unsigned int lifetime;
 } Particle;
 
-extern Particle particles[NUM_OF_PARTICLES];
+extern Particle snow[NUM_OF_PARTICLES];
 
-extern GLfloat initX;
-extern GLfloat initY;
-extern GLfloat initZ;
-extern GLfloat ground;
-
-void generateParticles(Particle* particles, int numOfParticles);
-void regenerateParticle(Particle* particles, int index);
-void moveParticles(Particle* particles, int numOfParticles);
+void generateParticles(Particle* particles, int numOfParticles, GLfloat radius, GLfloat initialY);
+void regenerateParticle(Particle* particles, int index, GLfloat radius, GLfloat initialY);
+void moveParticles(Particle* particles, int numOfParticles, GLfloat ground);
 void printParticles(Particle* particles, int numOfParticles);
 
 #endif
