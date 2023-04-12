@@ -163,7 +163,6 @@ void drawScene(void) {
 
 	Position necklaceStart = newPosition(xIntersection + sphere.radius, yIntersection, 0);
 	position = necklaceStart;
-	GLfloat neckLaceXBkp;
 	drawSphere(color, sphere, necklaceStart);
 	necklaceStart.x *= -1;
 	drawSphere(color, sphere, necklaceStart);

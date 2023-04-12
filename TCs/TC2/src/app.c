@@ -1,5 +1,7 @@
 #include "app.h"
 
+#define UNUSED __attribute__((unused))
+
 // Change viewing volume and viewport.  Called when window is resized
 void resize(int width, int height) {
 	GLfloat fAspect;
@@ -25,7 +27,7 @@ void resize(int width, int height) {
 }
 
 // Respond to some other keys (move camera and zoom)
-void normalKeyPressed(unsigned char key, int x, int y) {
+void normalKeyPressed(unsigned char key, UNUSED int x, UNUSED int y) {
     switch(key) {
         // Move the camera forward when the "W" key is pressed
         case 'w':
@@ -136,7 +138,7 @@ void setupRC() {
 }
 
 // Respond to arrow keys (rotate snowman)
-void specialKeyPressed(int key, int x, int y) {
+void specialKeyPressed(int key, UNUSED int x, UNUSED int y) {
 	switch (key) {
 		case GLUT_KEY_DOWN:
 			yRot -= 5.0f;
