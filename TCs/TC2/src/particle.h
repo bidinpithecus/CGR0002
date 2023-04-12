@@ -4,6 +4,8 @@
 #include "utils.h"
 
 #define NUM_OF_PARTICLES 500
+#define LIFETIME 100
+#define GRAVITY 0.001
 
 typedef struct Particle {
 	GLfloat x;
@@ -15,6 +17,7 @@ typedef struct Particle {
 	GLfloat zVelocity;
 
 	GLfloat size;
+	unsigned int lifetime;
 } Particle;
 
 extern Particle snow[NUM_OF_PARTICLES];
