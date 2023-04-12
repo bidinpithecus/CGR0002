@@ -1,51 +1,42 @@
 #include "particle.h"
 
 Particle snow[NUM_OF_PARTICLES];
-GLfloat snowSize = 5.0;
 
 void generateParticles(Particle* particles, int numOfParticles, GLfloat radius, GLfloat initialY) {
 	for (int i = 0; i < numOfParticles; i++) {
-		particles[i].x = randomFloat(-radius, radius);
-		particles[i].y = initialY;
-		particles[i].z = generateCoordinateInsideSphere(radius, particles[i].x, particles[i].y);
-
-		particles[i].xVelocity = 0.001;
-		particles[i].yVelocity = 0.020;
-		particles[i].zVelocity = 0.001;
-
-		particles[i].lifetime = LIFETIME;
+		generateParticle(&particles[i], radius, initialY);
 	}
 }
 
-void regenerateParticle(Particle* particles, int index, GLfloat radius, GLfloat initialY) {
-	particles[index].x = randomFloat(-radius, radius);
-	particles[index].y = initialY;
-	particles[index].z = generateCoordinateInsideSphere(radius, particles[index].x, particles[index].y);
+void generateParticle(Particle* particle, GLfloat radius, GLfloat initialY) {
+	particle->x = randomFloat(-radius, radius);
+	particle->y = initialY;
+	particle->z = generateCoordinateInsideSphere(radius, particle->x, particle->y);
 
-	particles[index].xVelocity = 0.001;
-	particles[index].yVelocity = 0.05;
-	particles[index].zVelocity = 0.001;
+	particle->xVelocity = 0.0;
+	particle->yVelocity = 0.01;
+	particle->zVelocity = 0.0;
 
-	particles[index].lifetime = LIFETIME;
+	particle->size = randomFloat(radius * 0.001f, radius * 0.006);
 }
 
-void moveParticles(Particle* particles, int numOfParticles, GLfloat radius, GLfloat ground) {
-	glPointSize(snowSize);
-	glBegin(GL_POINTS);
-	glColor3f(1.0f, 1.0f, 1.0f);
+void moveParticles(GLUquadric* quad, Particle* particles, int numOfParticles, GLfloat radius, GLfloat ground) {
+	Sphere snowflake = newSphere(quad, 0.0, 104, 52);
+	Position snowPos;
+	int color = 0xFFFFFF;
 
 	for (int i = 0; i < numOfParticles; i++) {
 		if (particles[i].y >= ground) {
-			printf("snow %d falling\n", i);
 			particles[i].y -= particles[i].yVelocity;
-
 		} else {
-			printf("snow %d hit the ground\n", i);
+			radius -= particles[i].size;
+			particles[i].x = randomFloat(-radius, radius);
+			particles[i].z = randomFloat(-radius, radius);
 			particles[i].y = generateAnotherCoordinateOnSurface(radius, particles[i].x, particles[i].z);
 		}
 
-		glVertex3f(particles[i].x, particles[i].y, particles[i].z);
-		// printf("height of particle %d: %lf\n", i, particles[i].y);
+		snowflake.radius = particles[i].size;
+		snowPos = newPosition(particles[i].x, particles[i].y, particles[i].z);
+		drawSphere(color, snowflake, snowPos);
 	}
-	glEnd();
 }

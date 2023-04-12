@@ -1,11 +1,5 @@
 #include "snowman.h"
 #include "particle.h"
-#include <GL/gl.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <math.h>
 
 // Define the camera position and orientation
 GLfloat cameraDirection[3] = { 0.0f, 0.0f, -1.0f };
@@ -265,7 +259,7 @@ void drawScene(void) {
 	drawDisk(color, disk, rotation, position);
 
 	glPushMatrix();
-		moveParticles(snow, NUM_OF_PARTICLES, globeRadius, -floorHeight);
+		moveParticles(pObj, snow, NUM_OF_PARTICLES, floorRadius, -floorHeight);
 	glPopMatrix();
 
 	// draw the translucent sphere
@@ -292,7 +286,7 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-	glutCreateWindow("Snowie");
+	glutCreateWindow("Snow G-Loc");
 	glutReshapeFunc(resize);
 	glutKeyboardFunc(normalKeyPressed);
 	glutSpecialFunc(specialKeyPressed);

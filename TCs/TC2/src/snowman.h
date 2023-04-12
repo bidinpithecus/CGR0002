@@ -2,11 +2,6 @@
 #define _snowman_h_
 
 #include "app.h"
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <math.h>
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480

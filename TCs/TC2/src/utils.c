@@ -52,7 +52,7 @@ GLfloat generateAnotherCoordinateOnSurface(GLfloat radius, GLfloat firstCoord, G
 }
 
 GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord) {
-	float max = sqrt(pow(radius, 2) - pow(firstCoord, 2) - pow(secondCoord, 2));
+	float max = generateAnotherCoordinateOnSurface(radius, firstCoord, secondCoord);
 
 	return randomFloat(-max, max);
 }
