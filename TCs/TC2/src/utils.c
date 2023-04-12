@@ -47,14 +47,35 @@ void drawSphere(int color, Sphere sphere, Position position) {
 	glPopMatrix();
 }
 
-GLfloat generateAnotherCoordinateOnSurface(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord) {
-	return sqrt(pow(radius, 2) - pow(firstCoord, 2) - pow(secondCoord, 2));
+double generateAnotherCoordinateOnSurface(double r, double y0, double c1, double c2, int xyz) {
+	if (xyz == X) {
+		return sqrt(pow(r, 2) - pow(c1, 2) + (2 * c1 * y0) - pow(y0, 2) - pow(c2, 2));
+	} else if (xyz == Y) {
+		return sqrt(pow(r, 2) - pow(c1, 2) - pow(c2, 2)) + y0;
+		// return y0 - sqrt(pow(r, 2) - pow(c1, 2) - pow(c2, 2));
+	} else if (xyz == Z) {
+		return sqrt(pow(r, 2) - pow(c1, 2) - pow(c2 - y0, 2));
+	} else {
+		return 0;
+	}
 }
 
-GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord) {
-	float max = generateAnotherCoordinateOnSurface(radius, firstCoord, secondCoord);
+GLfloat generateCoordinateInsideSphere(GLfloat r, double y0, GLfloat c1, GLfloat c2) {
+	float max = generateAnotherCoordinateOnSurface(r, c1, c2, y0, Y);
 
 	return randomFloat(-max, max);
+}
+
+/*
+	r stands for radius and x the sphere,
+	y stands for the y position
+*/
+float calculateYAxisOfIntersection(float r0, float r1, float y0, float y1) {
+	return ((y0 + y1) / 2.0) + ((pow(r0, 2) - pow(r1, 2)) / (2 * (y1 - y0)));
+}
+
+float calculateXAxisOfIntersection(float r, float y, float y0) {
+	return sqrt(pow(r, 2) - pow(y - y0, 2));
 }
 
 int randomNum(int min, int max) {

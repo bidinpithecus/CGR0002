@@ -10,6 +10,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define X 0
+#define Y 1
+#define Z 2
+
 typedef struct Cylinder {
 	GLUquadric* quad;
 	GLdouble base;
@@ -55,8 +59,10 @@ typedef struct Sphere {
 
 Rgb hexTo3f(int);
 
-GLfloat generateAnotherCoordinateOnSurface(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord);
-GLfloat generateCoordinateInsideSphere(GLfloat radius, GLfloat firstCoord, GLfloat secondCoord);
+double generateAnotherCoordinateOnSurface(double r, double y0, double c1, double c2, int xyz);
+GLfloat generateCoordinateInsideSphere(GLfloat r, double y0, GLfloat c1, GLfloat c2);
+float calculateYAxisOfIntersection(float r0, float r1, float y0, float y1);
+float calculateXAxisOfIntersection(float r, float y, float y0);
 
 int randomNum(int min, int max);
 float randomFloat(float min, float max);

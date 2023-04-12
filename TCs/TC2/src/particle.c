@@ -11,7 +11,7 @@ void generateParticles(Particle* particles, int numOfParticles, GLfloat radius, 
 void generateParticle(Particle* particle, GLfloat radius, GLfloat initialY) {
 	particle->x = randomFloat(-radius, radius);
 	particle->y = initialY;
-	particle->z = generateCoordinateInsideSphere(radius, particle->x, particle->y);
+	particle->z = generateCoordinateInsideSphere(radius,  0, particle->x, particle->y);
 
 	particle->xVelocity = 0.0;
 	particle->yVelocity = GRAVITY * randomFloat(1, 10);
@@ -34,7 +34,7 @@ void moveParticles(GLUquadric* quad, Particle* particles, int numOfParticles, GL
 			floorRadius -= particles[i].size;
 			particles[i].x = randomFloat(-floorRadius, floorRadius);
 			particles[i].z = randomFloat(-floorRadius, floorRadius);
-			particles[i].y = generateAnotherCoordinateOnSurface(floorRadius, particles[i].x, particles[i].z);
+			particles[i].y = generateAnotherCoordinateOnSurface(floorRadius, 0, particles[i].x, particles[i].z, Y);
 			particles[i].yVelocity = GRAVITY;
 		}
 

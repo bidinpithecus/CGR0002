@@ -158,22 +158,40 @@ void drawScene(void) {
 	position.x *= -1;
 	drawSphere(color, sphere, position);
 
-	Position neckLacePosition = newPosition((bodyRadius / 10.0) - sphere.radius, bodyY, bodyRadius);
-	GLfloat neckLaceXBkp;
-	// necklace
-	for (int i = 1; i < 10; i++) {
-		position = neckLacePosition;
-		position.x -= (i * sphere.radius);
-		neckLaceXBkp = position.x;
-		position.y += (i * sphere.radius);
-		position.z = generateAnotherCoordinateOnSurface(bodyRadius, position.x, position.y);
-		drawSphere(color, sphere, position);
+	float yIntersection = calculateYAxisOfIntersection(bodyRadius, headRadius, bodyY, headY);
+	float xIntersection = calculateXAxisOfIntersection(bodyRadius, yIntersection, bodyY);
 
-		position = neckLacePosition;
-		position.x += (i * sphere.radius);
-		position.y += (i * sphere.radius);
-		position.z = generateAnotherCoordinateOnSurface(bodyRadius, neckLaceXBkp, position.y);
+	Position necklaceStart = newPosition(xIntersection + sphere.radius, yIntersection, 0);
+	position = necklaceStart;
+	GLfloat neckLaceXBkp;
+	drawSphere(color, sphere, necklaceStart);
+	necklaceStart.x *= -1;
+	drawSphere(color, sphere, necklaceStart);
+	necklaceStart.x *= -1;
+
+	position.x -= sphere.radius / 2;
+	position.z -= sphere.radius * 2;
+	drawSphere(color, sphere, position);
+	position.x *= -1;
+	drawSphere(color, sphere, position);
+
+	position = necklaceStart;
+	for (int i = 0; i < 20; i++) {
+		position.x -= sphere.radius;
+		position.z = -generateAnotherCoordinateOnSurface(headRadius + (sphere.radius), headY, position.x, position.y, Z);
 		drawSphere(color, sphere, position);
+	}
+
+	Position neckLaceLeft = necklaceStart;
+	Position neckLaceRight = newPosition(-neckLaceLeft.x, neckLaceLeft.y, neckLaceLeft.z);
+	// necklace
+	for (int i = 0; i < 9; i++) {
+		neckLaceLeft.z += sphere.radius * 1.25;
+		neckLaceLeft.y -= sphere.radius * 0.5;
+		neckLaceLeft.x = generateAnotherCoordinateOnSurface(bodyRadius + (sphere.radius * 0.5), bodyY, neckLaceLeft.y, neckLaceLeft.z, X);
+		drawSphere(color, sphere, neckLaceLeft);
+		neckLaceRight = newPosition(-neckLaceLeft.x, neckLaceLeft.y, neckLaceLeft.z);
+		drawSphere(color, sphere, neckLaceRight);
 	}
 
 	// Draw the sunglasses
