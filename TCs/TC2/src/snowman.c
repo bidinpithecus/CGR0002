@@ -27,18 +27,23 @@ Rotation rotation;
 
 Rgb rgbColor;
 GLUquadricObj *pObj;
-GLfloat globeOpeningHeight;
-GLfloat globeOpeningRadius;
-GLfloat floorHeight;
-GLfloat floorRadius;
-GLfloat glassMult;
-GLfloat headY;
-GLfloat bodyY;
-GLfloat bodyRadius;
-GLfloat headRadius;
-GLfloat globeRadius = 3.5;
+const GLfloat globeRadius = 3.5;
+const GLfloat globeOpeningHeight = globeRadius * 0.714285714;
+const GLfloat floorHeight = globeRadius * (0.35);
+const GLfloat feetRadius = globeRadius * (1 / 8.0);
+const GLfloat feetY = -floorHeight + (feetRadius * 0.9);
+const GLfloat bodyRadius = feetRadius * 0.85;
+const GLfloat bodyY = feetY + (bodyRadius * 1.7);
+const GLfloat headRadius = bodyRadius * 0.85;
+const GLfloat headY = bodyY + (headRadius * 1.6);
+const GLfloat glassMult = headRadius * 0.75;
+const GLfloat bucketHeight = headRadius * 0.6;
+const GLfloat bucketY = headY + headRadius + (bucketHeight / 3);
+const GLfloat eyeRadius = headRadius * 0.1;
+const double bottomPlane[] = { 0.0, 1.0, 0.0, globeOpeningHeight };
+const double topPlane[] = { 0.0, -1.0, 0.0, -floorHeight };
 
-void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
+void drawArm(GLUquadricObj* pObj, int side) {
 	color = 0x4B3621;
 	GLfloat armSize;
 	cylinder = newCylinder(pObj, bodyRadius * 0.075f, bodyRadius * (0.075f / 2.0), bodyRadius * (0.075f / 2.0) * 50, 26, 13);
@@ -59,13 +64,8 @@ void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
 
 // Called to draw scene
 void drawScene(void) {
-	GLfloat globeOpeningHeight = globeRadius * 0.714285714;
-	GLfloat globeOpeningRadius = sqrt(pow(globeRadius, 2) - pow(globeOpeningHeight, 2));
-	GLfloat floorHeight = globeRadius * (0.35);
-	GLfloat floorRadius = sqrt((pow(globeRadius, 2) - pow(floorHeight, 2)));
-
-	double bottomPlane[] = { 0.0, 1.0, 0.0, globeOpeningHeight };
-	double topPlane[] = { 0.0, -1.0, 0.0, -floorHeight };
+	const GLfloat globeOpeningRadius = sqrt(pow(globeRadius, 2) - pow(globeOpeningHeight, 2));
+	const GLfloat floorRadius = sqrt((pow(globeRadius, 2) - pow(floorHeight, 2)));
 
 	pObj = gluNewQuadric();
 	gluQuadricNormals(pObj, GLU_SMOOTH);
@@ -96,31 +96,24 @@ void drawScene(void) {
 	drawDisk(color, disk, rotation, position);
 
 	// snowman's feet
-	sphere = newSphere(pObj, globeRadius * (1 / 8.0), 104, 52);
-	position.y = -floorHeight + (sphere.radius * 0.9);
+	sphere = newSphere(pObj, feetRadius, 104, 52);
+	position.y = feetY;
 	drawSphere(color, sphere, position);
 
 	// snowman's body
-	bodyRadius = sphere.radius * 0.85;
 	sphere = newSphere(pObj, bodyRadius, 104, 52);
-	bodyY = position.y + (sphere.radius * 1.7);
 	position.y = bodyY;
 	drawSphere(color, sphere, position);
 
 	// snowman's head
-	headRadius = sphere.radius * 0.85;
 	sphere = newSphere(pObj, headRadius, 104, 52);
-	headY = position.y + (headRadius * 1.6);
 	position.y = headY;
 	drawSphere(color, sphere, position);
-	glassMult = sphere.radius * 0.75;
 
-	position.y += sphere.radius;
 	// snowman's bucket
 	color = 0x261614;
-	cylinder = newCylinder(pObj, headRadius * 0.95f, headRadius * 1.05f, headRadius * 0.6, 50, 150);
-	position.y += (cylinder.height / 3);
-	position.y *= 0.95;
+	cylinder = newCylinder(pObj, headRadius * 0.95f, headRadius * 1.05f, bucketHeight, 50, 150);
+	position.y = bucketY * 0.95;
 	drawCylinder(color, cylinder, rotation, position);
 
 	// bucket's top
@@ -130,7 +123,7 @@ void drawScene(void) {
 
 	// bucket's brim
 	cylinder.base = cylinder.base * 1.3;
-	position.y -= cylinder.height * 1.5;
+	position.y -= bucketHeight * 1.5;
 	cylinder.height *= 0.5;
 	color = 0x211412;
 	drawCylinder(color, cylinder, rotation, position);
@@ -138,8 +131,8 @@ void drawScene(void) {
 	// eyes
 	// right
 	color = 0x000000;
-	sphere = newSphere(pObj, headRadius * 0.1, 26, 13);
-	position = newPosition((0.5 * glassMult) - (sphere.radius / 2.0), (headY * (3 / 4.0)) + (0.375 * glassMult) + (sphere.radius / 2.0), headRadius - sphere.radius);
+	sphere = newSphere(pObj, eyeRadius, 26, 13);
+	position = newPosition((0.5 * glassMult) - (eyeRadius / 2.0), (headY * (3 / 4.0)) + (0.375 * glassMult) + (eyeRadius / 2.0), headRadius - eyeRadius);
 	drawSphere(color, sphere, position);
 
 	// left
@@ -150,7 +143,7 @@ void drawScene(void) {
 	// right
 	color = 0xEDC967;
 	position.x = headRadius;
-	position.y -= sphere.radius;
+	position.y -= eyeRadius;
 	position.z = 0;
 	drawSphere(color, sphere, position);
 
@@ -161,23 +154,23 @@ void drawScene(void) {
 	float yIntersection = calculateYAxisOfIntersection(bodyRadius, headRadius, bodyY, headY);
 	float xIntersection = calculateXAxisOfIntersection(bodyRadius, yIntersection, bodyY);
 
-	Position necklaceStart = newPosition(xIntersection + sphere.radius, yIntersection, 0);
+	Position necklaceStart = newPosition(xIntersection + eyeRadius, yIntersection, 0);
 	position = necklaceStart;
 	drawSphere(color, sphere, necklaceStart);
 	necklaceStart.x *= -1;
 	drawSphere(color, sphere, necklaceStart);
 	necklaceStart.x *= -1;
 
-	position.x -= sphere.radius / 2;
-	position.z -= sphere.radius * 2;
+	position.x -= eyeRadius / 2;
+	position.z -= eyeRadius * 2;
 	drawSphere(color, sphere, position);
 	position.x *= -1;
 	drawSphere(color, sphere, position);
 
 	position = necklaceStart;
 	for (int i = 0; i < 20; i++) {
-		position.x -= sphere.radius;
-		position.z = -generateAnotherCoordinateOnSurface(headRadius + (sphere.radius), headY, position.x, position.y, Z);
+		position.x -= eyeRadius;
+		position.z = -generateAnotherCoordinateOnSurface(headRadius + (eyeRadius), headY, position.x, position.y, Z);
 		drawSphere(color, sphere, position);
 	}
 
@@ -185,9 +178,9 @@ void drawScene(void) {
 	Position neckLaceRight = newPosition(-neckLaceLeft.x, neckLaceLeft.y, neckLaceLeft.z);
 	// necklace
 	for (int i = 0; i < 9; i++) {
-		neckLaceLeft.z += sphere.radius * 1.25;
-		neckLaceLeft.y -= sphere.radius * 0.5;
-		neckLaceLeft.x = generateAnotherCoordinateOnSurface(bodyRadius + (sphere.radius * 0.5), bodyY, neckLaceLeft.y, neckLaceLeft.z, X);
+		neckLaceLeft.z += eyeRadius * 1.25;
+		neckLaceLeft.y -= eyeRadius * 0.5;
+		neckLaceLeft.x = generateAnotherCoordinateOnSurface(bodyRadius + (eyeRadius * 0.5), bodyY, neckLaceLeft.y, neckLaceLeft.z, X);
 		drawSphere(color, sphere, neckLaceLeft);
 		neckLaceRight = newPosition(-neckLaceLeft.x, neckLaceLeft.y, neckLaceLeft.z);
 		drawSphere(color, sphere, neckLaceRight);
@@ -261,8 +254,8 @@ void drawScene(void) {
 	position = newPosition(0.0f, headY * 0.975, headRadius);
 	drawCylinder(color, cylinder, rotation, position);
 
-	drawArm(bodyRadius, bodyY, pObj, RIGHT);
-	drawArm(bodyRadius, bodyY, pObj, LEFT);
+	drawArm(pObj, RIGHT);
+	drawArm(pObj, LEFT);
 
 	// floor
 	color = 0xC54245;
@@ -297,7 +290,6 @@ void drawScene(void) {
 }
 
 int main(int argc, char *argv[]) {
-	floorHeight = globeRadius * (0.35);
     // Seed the random number generator with the current time
     srand((unsigned int)time(NULL));
 	glutInit(&argc, argv);

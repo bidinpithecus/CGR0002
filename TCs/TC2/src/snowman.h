@@ -19,6 +19,6 @@ extern Sphere sphere;
 extern Position position;
 extern Rotation rotation;
 
-void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side);
+void drawArm(GLUquadricObj* pObj, int side);
 
 #endif
