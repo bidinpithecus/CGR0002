@@ -1,6 +1,6 @@
 #include "Camera.hpp"
 #include "snowman.h"
-// #include "particle.h"
+#include "Particle.hpp"
 #include "Color.hpp"
 #include "Shapes.hpp"
 #include "Helpers.hpp"
@@ -25,22 +25,23 @@ Rotation rotation;
 GLUquadricObj *pObj;
 const GLfloat globeRadius = 3.5;
 const GLfloat globeOpeningHeight = globeRadius * 0.714285714;
-const GLfloat globeOpeningRadius = sqrt(pow(globeRadius, 2) - pow(globeOpeningHeight, 2));
 const GLfloat floorHeight = globeRadius * (0.35);
-const GLfloat floorRadius = sqrt((pow(globeRadius, 2) - pow(floorHeight, 2)));
 const GLfloat feetRadius = globeRadius * (1 / 8.0);
-const GLfloat bodyRadius = feetRadius * 0.85;
-const GLfloat headRadius = bodyRadius * 0.85;
 const GLfloat feetY = -floorHeight + (feetRadius * 0.9);
-const GLfloat bodyY = -floorHeight + (feetRadius * 0.9) + (bodyRadius * 1.7);
-const GLfloat headY = bodyRadius + (headRadius * 1.6);
-const GLfloat bucketHeight = headRadius * 0.6;
+const GLfloat bodyRadius = feetRadius * 0.85;
+const GLfloat bodyY = feetY + (bodyRadius * 1.7);
+const GLfloat headRadius = bodyRadius * 0.85;
+const GLfloat headY = bodyY + (headRadius * 1.6);
 const GLfloat glassMult = headRadius * 0.75;
-const GLfloat eyeSize = headRadius * 0.1;
+const GLfloat bucketHeight = headRadius * 0.6;
+const GLfloat bucketY = headY + headRadius + (bucketHeight / 3);
+const GLfloat eyeRadius = headRadius * 0.1;
 const double bottomPlane[] = { 0.0, 1.0, 0.0, globeOpeningHeight };
 const double topPlane[] = { 0.0, -1.0, 0.0, -floorHeight };
 
-void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
+Particle snow[NUM_OF_PARTICLES];
+
+void drawArm(GLUquadricObj* pObj, int side) {
 	color = Color(0x4B3621);
 	GLfloat armSize;
 	position = Position(bodyRadius * 0.75 * side, bodyY * 0.25, 0.0f);
@@ -62,6 +63,9 @@ void drawArm(double bodyRadius, double bodyY, GLUquadricObj* pObj, int side) {
 
 // Called to draw scene
 void drawScene(void) {
+	const GLfloat globeOpeningRadius = sqrt(pow(globeRadius, 2) - pow(globeOpeningHeight, 2));
+	const GLfloat floorRadius = sqrt((pow(globeRadius, 2) - pow(floorHeight, 2)));
+
 	pObj = gluNewQuadric();
 	gluQuadricNormals(pObj, GLU_SMOOTH);
 
@@ -134,7 +138,7 @@ void drawScene(void) {
 	// eyes
 	// right
 	color = Color(0x000000);
-	position = Position((0.5 * glassMult) - (eyeSize / 2.0), (headY * (3 / 4.0)) + (0.375 * glassMult) + (eyeSize / 2.0), headRadius - eyeSize);
+	position = Position((0.5 * glassMult) - (eyeRadius / 2.0), (headY * (3 / 4.0)) + (0.375 * glassMult) + (eyeRadius / 2.0), headRadius - eyeRadius);
 	sphere = Sphere(pObj, headRadius * 0.1, 26, 13, rotation, position, color);
 	sphere.draw();
 
@@ -148,7 +152,7 @@ void drawScene(void) {
 	color = Color(0xEDC967);
 	sphere.setColor(color);
 	position.setX(headRadius);
-	position.setY(position.getY() - sphere.getSize());
+	position.setY(position.getY() - eyeRadius);
 	position.setZ(0);
 	sphere.setPosition(position);
 	sphere.draw();
@@ -161,7 +165,7 @@ void drawScene(void) {
 	float yIntersection = calculateYAxisOfIntersection(bodyRadius, headRadius, bodyY, headY);
 	float xIntersection = calculateXAxisOfIntersection(bodyRadius, yIntersection, bodyY);
 
-	Position necklaceStart = Position(xIntersection + sphere.getSize(), yIntersection, 0);
+	Position necklaceStart = Position(xIntersection + eyeRadius, yIntersection, 0);
 	position = necklaceStart;
 	sphere.setPosition(position);
 	sphere.draw();
@@ -170,8 +174,8 @@ void drawScene(void) {
 	sphere.draw();
 	necklaceStart.setX(necklaceStart.getX() * -1);
 
-	position.setX(position.getX() - sphere.getSize() / 2);
-	position.setZ(position.getZ() - sphere.getSize() * 2);
+	position.setX(position.getX() - eyeRadius / 2);
+	position.setZ(position.getZ() - eyeRadius * 2);
 	sphere.setPosition(position);
 	sphere.draw();
 	position.setX(position.getX() * -1);
@@ -180,8 +184,8 @@ void drawScene(void) {
 
 	position = necklaceStart;
 	for (int i = 0; i < 20; i++) {
-		position.setX(position.getX() - sphere.getSize());
-		position.setZ(-generateAnotherCoordinateOnSurface(headRadius + (sphere.getSize()), headY, position.getX(), position.getY(), Z));
+		position.setX(position.getX() - eyeRadius);
+		position.setZ(-generateAnotherCoordinateOnSurface(headRadius + (eyeRadius), headY, position.getX(), position.getY(), Z));
 		sphere.setPosition(position);
 		sphere.draw();
 	}
@@ -190,9 +194,9 @@ void drawScene(void) {
 	Position neckLaceRight = Position(-neckLaceLeft.getX(), neckLaceLeft.getY(), neckLaceLeft.getZ());
 	// necklace
 	for (int i = 0; i < 9; i++) {
-		neckLaceLeft.setZ(neckLaceLeft.getZ() + sphere.getSize() * 1.25);
-		neckLaceLeft.setY(neckLaceLeft.getY() - sphere.getSize() * 0.5);
-		neckLaceLeft.setX(generateAnotherCoordinateOnSurface(bodyRadius + (sphere.getSize() * 0.5), bodyY, neckLaceLeft.getY(), neckLaceLeft.getZ(), X));
+		neckLaceLeft.setZ(neckLaceLeft.getZ() + eyeRadius * 1.25);
+		neckLaceLeft.setY(neckLaceLeft.getY() - eyeRadius * 0.5);
+		neckLaceLeft.setX(generateAnotherCoordinateOnSurface(bodyRadius + (eyeRadius * 0.5), bodyY, neckLaceLeft.getY(), neckLaceLeft.getZ(), X));
 		sphere.setPosition(neckLaceLeft);
 		sphere.draw();
 		neckLaceRight = Position(-neckLaceLeft.getX(), neckLaceLeft.getY(), neckLaceLeft.getZ());
@@ -268,8 +272,8 @@ void drawScene(void) {
 	cylinder = Cylinder(pObj, headRadius * 0.1, 0.0f, headRadius * 0.8, 26, 13, rotation, position, color);
 	cylinder.draw();
 
-	drawArm(bodyRadius, bodyY, pObj, RIGHT);
-	drawArm(bodyRadius, bodyY, pObj, LEFT);
+	drawArm(pObj, RIGHT);
+	drawArm(pObj, LEFT);
 
 	// floor
 	color = Color(0xC54245);
@@ -282,9 +286,9 @@ void drawScene(void) {
 	disk = Disk(pObj, 0.0, cylinder.getTop(), 1000, 10, rotation, position, color);
 	disk.draw();
 
-	// glPushMatrix();
-	// 	moveParticles(pObj, snow, NUM_OF_PARTICLES, floorRadius, -floorHeight);
-	// glPopMatrix();
+	glPushMatrix();
+		moveParticles(pObj, snow, NUM_OF_PARTICLES, floorRadius, -floorHeight);
+	glPopMatrix();
 
 	// draw the translucent sphere
 	glPushMatrix();
@@ -316,7 +320,7 @@ int main(int argc, char *argv[]) {
 	glutDisplayFunc(renderScene);
 	glutIdleFunc(renderScene);
 	setupRC();
-	// generateParticles(snow, NUM_OF_PARTICLES, globeRadius, -floorHeight);
+	generateParticles(snow, NUM_OF_PARTICLES, globeRadius, -floorHeight);
 	glutMainLoop();
 
 	return 0;

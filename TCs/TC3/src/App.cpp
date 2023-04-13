@@ -1,6 +1,7 @@
-#include "app.h"
+#include "App.hpp"
 #include "Camera.hpp"
 #include "Color.hpp"
+#include "Particle.hpp"
 
 #define UNUSED __attribute__((unused))
 
