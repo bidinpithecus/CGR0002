@@ -1,21 +1,25 @@
-#ifndef _app_h_
-#define _app_h_
+#ifndef _APP_H_
+#define _APP_H_
 
-#include "utils.h"
+#include "Utils.hpp"
+#include "Camera.hpp"
 
-extern GLfloat cameraDirection[3];
-extern GLfloat cameraPosition[3];
-extern GLfloat cameraUp[3];
-extern GLfloat cameraSpeed;
-extern GLfloat zoom;
-extern GLfloat xRot;
-extern GLfloat yRot;
+class App {
+	public:
+		App();
+		void setup();
+
+	private:
+		Camera camera;
+};
 
 extern int height;
 extern int width;
 extern int xPos;
 extern int yPos;
 extern bool isFullScreen;
+
+extern Camera camera;
 
 void drawScene();
 void initScene();

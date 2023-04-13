@@ -1,6 +1,11 @@
-#include "app.h"
+#include "App.hpp"
+#include "Camera.hpp"
+#include "Color.hpp"
+#include "Particle.hpp"
 
 #define UNUSED __attribute__((unused))
+
+Camera camera = Camera(Position(0, 0, -1), Position(0.0f, -0.75f, 5.0f), Position(0.0f, 1.0f, 0.0f), Position(0, 0, 0), 0.05f, -4.0f);
 
 // Change viewing volume and viewport.  Called when window is resized
 void resize(int width, int height) {
@@ -32,35 +37,35 @@ void normalKeyPressed(unsigned char key, UNUSED int x, UNUSED int y) {
         // Move the camera forward when the "W" key is pressed
         case 'w':
         case 'W':
-            cameraPosition[1] += cameraSpeed;
+			camera.setPosition(Position(camera.getPosition().getX(), camera.getPosition().getY() + camera.getSpeed(), camera.getPosition().getZ()));
             break;
 
         // Move the camera backward when the "S" key is pressed
         case 's':
         case 'S':
-            cameraPosition[1] -= cameraSpeed;
+			camera.setPosition(Position(camera.getPosition().getX(), camera.getPosition().getY() - camera.getSpeed(), camera.getPosition().getZ()));
             break;
 
         // Move the camera to the left when the "A" key is pressed
         case 'a':
         case 'A':
-            cameraPosition[0] -= cameraSpeed;
+			camera.setPosition(Position(camera.getPosition().getX() - camera.getSpeed(), camera.getPosition().getY(), camera.getPosition().getZ()));
             break;
 
         // Move the camera to the right when the "D" key is pressed
         case 'D':
         case 'd':
-            cameraPosition[0] += cameraSpeed;
+			camera.setPosition(Position(camera.getPosition().getX() + camera.getSpeed(), camera.getPosition().getY(), camera.getPosition().getZ()));
             break;
 
 		// Zoom out when the "z" key is pressed
 		case 'z':
-			zoom -= cameraSpeed * 2;
+			camera.setZoom(camera.getZoom() - (camera.getSpeed() * 2));
 			break;
 
 		// Zoom in when the "z" key is pressed
 		case 'Z':
-			zoom += cameraSpeed * 2;
+			camera.setZoom(camera.getZoom() + (camera.getSpeed() * 2));
 			break;
 
         // Exit the program when the "ESC" key is pressed
@@ -78,15 +83,15 @@ void initScene() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(cameraPosition[0], cameraPosition[1], cameraPosition[2], cameraPosition[0] + cameraDirection[0], cameraPosition[1] + cameraDirection[1], cameraPosition[2] + cameraDirection[2], cameraUp[0], cameraUp[1], cameraUp[2]);
+    gluLookAt(camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ(), camera.getPosition().getX() + camera.getDirection().getX(), camera.getPosition().getY() + camera.getDirection().getY(), camera.getPosition().getZ() + camera.getDirection().getZ(), camera.getUp().getX(), camera.getUp().getY(), camera.getUp().getZ());
 
 	// Save the matrix state and do the rotations
 	glPushMatrix();
 
 	// Move object back and do in place rotation
-	glTranslatef(0.0f, -1.0f, zoom);
-	glRotatef(yRot, 1.0f, 0.0f, 0.0f);
-	glRotatef(xRot, 0.0f, 1.0f, 0.0f);
+	glTranslatef(0.0f, -1.0f, camera.getZoom());
+	glRotatef(camera.getRotation().getY(), 1.0f, 0.0f, 0.0f);
+	glRotatef(camera.getRotation().getX(), 0.0f, 1.0f, 0.0f);
 }
 
 void finishScene() {
@@ -131,29 +136,29 @@ void setupRC() {
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
 	// Main background color
-	Rgb backgroundColor = hexTo3f(0x555555);
-
+	Color backgroundColor = Color(0x555555);
 	// Off-white background
-	glClearColor(backgroundColor.red, backgroundColor.green, backgroundColor.blue, 1.0f);
+	glClearColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), 1.0f);
 }
 
 // Respond to arrow keys (rotate snowman)
 void specialKeyPressed(int key, UNUSED int x, UNUSED int y) {
+	float rotationSpeed = camera.getSpeed() * 100;
 	switch (key) {
 		case GLUT_KEY_DOWN:
-			yRot -= 5.0f;
+			camera.setRotation(Position(camera.getRotation().getX(), camera.getRotation().getY() - rotationSpeed, camera.getRotation().getZ()));
 			break;
 
 		case GLUT_KEY_UP:
-			yRot += 5.0f;
+			camera.setRotation(Position(camera.getRotation().getX(), camera.getRotation().getY() + rotationSpeed, camera.getRotation().getZ()));
 			break;
 
 		case GLUT_KEY_LEFT:
-			xRot += 5.0f;
+			camera.setRotation(Position(camera.getRotation().getX() + rotationSpeed, camera.getRotation().getY(), camera.getRotation().getZ()));
 			break;
 
 		case GLUT_KEY_RIGHT:
-			xRot -= 5.0f;
+			camera.setRotation(Position(camera.getRotation().getX() - rotationSpeed, camera.getRotation().getY(), camera.getRotation().getZ()));
 			break;
 
 		case GLUT_KEY_F11:
@@ -161,8 +166,7 @@ void specialKeyPressed(int key, UNUSED int x, UNUSED int y) {
 			break;
 	}
 
-	xRot = (GLfloat)((const int)xRot % 360);
-	yRot = (GLfloat)((const int)yRot % 360);
+	camera.setRotation(Position((int) camera.getRotation().getX() % 360, (int) camera.getRotation().getY() % 360, camera.getRotation().getZ()));
 
 	// Refresh the Window
 	glutPostRedisplay();
