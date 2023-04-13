@@ -2,7 +2,6 @@
 #define _CAMERA_HPP_
 
 #include "Utils.hpp"
-#include <vector>
 #include <GL/gl.h>
 
 class Camera {

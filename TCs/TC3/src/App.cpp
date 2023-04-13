@@ -1,9 +1,17 @@
 #include "App.hpp"
 #include "Camera.hpp"
 #include "Color.hpp"
-#include "Particle.hpp"
 
 #define UNUSED __attribute__((unused))
+
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+
+int width = WINDOW_WIDTH;
+int height = WINDOW_HEIGHT;
+int xPos = 0;
+int yPos = 0;
+bool isFullScreen = false;
 
 Camera camera = Camera(Position(0, 0, -1), Position(0.0f, -0.75f, 5.0f), Position(0.0f, 1.0f, 0.0f), Position(0, 0, 0), 0.05f, -4.0f);
 
