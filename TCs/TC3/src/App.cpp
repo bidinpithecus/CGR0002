@@ -41,30 +41,30 @@ void resize(int width, int height) {
 
 // Respond to some other keys (move camera and zoom)
 void normalKeyPressed(unsigned char key, UNUSED int x, UNUSED int y) {
-    switch(key) {
-        // Move the camera forward when the "W" key is pressed
-        case 'w':
-        case 'W':
+	switch(key) {
+		// Move the camera forward when the "W" key is pressed
+		case 'w':
+		case 'W':
 			camera.setPosition(Position(camera.getPosition().getX(), camera.getPosition().getY() + camera.getSpeed(), camera.getPosition().getZ()));
-            break;
+			break;
 
-        // Move the camera backward when the "S" key is pressed
-        case 's':
-        case 'S':
+		// Move the camera backward when the "S" key is pressed
+		case 's':
+		case 'S':
 			camera.setPosition(Position(camera.getPosition().getX(), camera.getPosition().getY() - camera.getSpeed(), camera.getPosition().getZ()));
-            break;
+			break;
 
-        // Move the camera to the left when the "A" key is pressed
-        case 'a':
-        case 'A':
+		// Move the camera to the left when the "A" key is pressed
+		case 'a':
+		case 'A':
 			camera.setPosition(Position(camera.getPosition().getX() - camera.getSpeed(), camera.getPosition().getY(), camera.getPosition().getZ()));
-            break;
+			break;
 
-        // Move the camera to the right when the "D" key is pressed
-        case 'D':
-        case 'd':
+		// Move the camera to the right when the "D" key is pressed
+		case 'D':
+		case 'd':
 			camera.setPosition(Position(camera.getPosition().getX() + camera.getSpeed(), camera.getPosition().getY(), camera.getPosition().getZ()));
-            break;
+			break;
 
 		// Zoom out when the "z" key is pressed
 		case 'z':
@@ -76,22 +76,22 @@ void normalKeyPressed(unsigned char key, UNUSED int x, UNUSED int y) {
 			camera.setZoom(camera.getZoom() + (camera.getSpeed() * 2));
 			break;
 
-        // Exit the program when the "ESC" key is pressed
-        case 27:
-            exit(0);
-            break;
-    }
+		// Exit the program when the "ESC" key is pressed
+		case 27:
+			exit(0);
+			break;
+	}
 
-    // Redraw the scene
-    glutPostRedisplay();
+	// Redraw the scene
+	glutPostRedisplay();
 }
 
 void initScene() {
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ(), camera.getPosition().getX() + camera.getDirection().getX(), camera.getPosition().getY() + camera.getDirection().getY(), camera.getPosition().getZ() + camera.getDirection().getZ(), camera.getUp().getX(), camera.getUp().getY(), camera.getUp().getZ());
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ(), camera.getPosition().getX() + camera.getDirection().getX(), camera.getPosition().getY() + camera.getDirection().getY(), camera.getPosition().getZ() + camera.getDirection().getZ(), camera.getUp().getX(), camera.getUp().getY(), camera.getUp().getZ());
 
 	// Save the matrix state and do the rotations
 	glPushMatrix();
@@ -114,39 +114,59 @@ void renderScene() {
 }
 
 // This function does any needed initialization on the rendering context.  Here it sets up and initializes the lighting for the scene.
-void setupRC() {
-	// Light values and coordinates
-	GLfloat whiteLight[] = { 0.45f, 0.45f, 0.45f, 1.0f };
-	GLfloat sourceLight[] = { 0.25f, 0.25f, 0.25f, 1.0f };
-	GLfloat lightPos[] = { -10.f, 5.0f, 5.0f, 1.0f };
+void setupRC()
+{
+    // Set up OpenGL rendering context
 
-	// Hidden surface removal
-	glEnable(GL_DEPTH_TEST);
-	// Counter clock-wise polygons face out
-	glFrontFace(GL_CCW);
-	// Do not calculate inside
-	glEnable(GL_CULL_FACE);
+    // Enable depth testing
+    glEnable(GL_DEPTH_TEST);
 
-	// Enable lighting
-	glEnable(GL_LIGHTING);
+    // Set counter-clockwise polygons to face out
+    glFrontFace(GL_CCW);
 
-	// Setup and enable light 0
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,whiteLight);
-	glLightfv(GL_LIGHT0,GL_AMBIENT,sourceLight);
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,sourceLight);
-	glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
-	glEnable(GL_LIGHT0);
+    // Enable backface culling
+    glEnable(GL_CULL_FACE);
 
-	// Enable color tracking
-	glEnable(GL_COLOR_MATERIAL);
+    // Enable lighting
+    glEnable(GL_LIGHTING);
 
-	// Set Material properties to follow glColor values
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    // Set up and enable light 0 for ambient and diffuse light
+    GLfloat whiteLight[] = {0.05f, 0.05f, 0.05f, 1.0f};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, whiteLight);
+    GLfloat sourceLight[] = {0.25f, 0.25f, 0.25f, 1.0f};
+    GLfloat lightPos[] = {-10.f, 5.0f, 5.0f, 1.0f};
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, sourceLight);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, sourceLight);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
-	// Main background color
-	Color backgroundColor = Color(0x555555);
-	// Off-white background
-	glClearColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), 1.0f);
+    // Set up and enable light 1 for moonlight
+    GLfloat moonPosition[] = {-10.f, 5.0f, 5.0f, 1.0f};
+    GLfloat moonDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat moonSpecular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat moonEmission[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat moonConstantAttenuation = 1.0f; // Constant attenuation factor
+    GLfloat moonLinearAttenuation = 0.0f; // Linear attenuation factor
+    GLfloat moonQuadraticAttenuation = 0.01f; // Quadratic attenuation factor, adjust as needed
+
+    glEnable(GL_LIGHT1);
+    glLightfv(GL_LIGHT1, GL_POSITION, moonPosition);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, moonDiffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, moonSpecular);
+    glLightfv(GL_LIGHT1, GL_EMISSION, moonEmission);
+    glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, moonConstantAttenuation);
+    glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, moonLinearAttenuation);
+    glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, moonQuadraticAttenuation);
+
+    // Enable color tracking
+    glEnable(GL_COLOR_MATERIAL);
+
+    // Set material properties to follow glColor values
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
+    // Set clear color to off-white for background
+    Color backgroundColor = Color(0x555555);
+    glClearColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), 1.0f);
 }
 
 // Respond to arrow keys (rotate snowman)

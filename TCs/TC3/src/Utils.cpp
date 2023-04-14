@@ -55,3 +55,40 @@ GLfloat Position::getZ() {
 	return this->z;
 }
 
+// Scale stuff
+Scale::Scale() {};
+
+Scale::Scale(GLfloat x, GLfloat y, GLfloat z) {
+	this->x = x;
+	this->y = y;
+	this->z = z;
+}
+
+void Scale::scale() {
+	glScalef(this->x, this->y, this->z);
+}
+
+void Scale::setX(GLfloat x) {
+	this->x = x;
+}
+
+void Scale::setY(GLfloat y) {
+	this->y = y;
+}
+
+void Scale::setZ(GLfloat z) {
+	this->z = z;
+}
+
+GLfloat Scale::getX() {
+	return this->x;
+}
+
+GLfloat Scale::getY() {
+	return this->y;
+}
+
+GLfloat Scale::getZ() {
+	return this->z;
+}
+

@@ -174,3 +174,52 @@ void Sphere::setColor(Color color) {
 GLfloat Sphere::getSize() {
 	return this->radius;
 }
+
+Cube::Cube() {}
+
+Cube::Cube(GLfloat side, Rotation rotation, Position position, Scale scale, Color color) {
+	this->side = side;
+	this->rotation = rotation;
+	this->position = position;
+	this->scale = scale;
+	this->color = color;
+}
+
+void Cube::draw() {
+	// save transform matrix state
+	glPushMatrix();
+	color.paint();
+	// setting position in screen
+	position.translate();
+	// setting rotation in screen
+	rotation.rotate();
+	// setting the disk itself
+	scale.scale();
+	glutSolidCube(side);
+	// restore transform matrix state
+	glPopMatrix();
+}
+
+void Cube::setSide(GLfloat side) {
+	this->side = side;
+}
+
+void Cube::setRotation(Rotation rotation) {
+	this->rotation = rotation;
+}
+
+void Cube::setPosition(Position position) {
+	this->position = position;
+}
+
+void Cube::setScale(Scale scale) {
+	this->scale = scale;
+}
+
+void Cube::setColor(Color color) {
+	this->color = color;
+}
+
+GLfloat Cube::getSide() {
+	return this->side;
+}

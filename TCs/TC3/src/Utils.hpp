@@ -44,4 +44,24 @@ class Rotation {
 		GLfloat z;
 };
 
+class Scale {
+	public:
+		Scale();
+		Scale(GLfloat x, GLfloat y, GLfloat z);
+
+		void scale();
+		void setX(GLfloat x);
+		void setY(GLfloat y);
+		void setZ(GLfloat z);
+
+		GLfloat getX();
+		GLfloat getY();
+		GLfloat getZ();
+
+	private:
+		GLfloat x;
+		GLfloat y;
+		GLfloat z;
+};
+
 #endif

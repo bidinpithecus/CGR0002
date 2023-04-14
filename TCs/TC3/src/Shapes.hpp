@@ -88,20 +88,21 @@ class Sphere {
 class Cube {
 	public:
 		Cube();
-		Cube(GLfloat side, Rotation rotation, Position position, Position scale, Color color);
+		Cube(GLfloat side, Rotation rotation, Position position, Scale scale, Color color);
 
 		void draw();
-		void setSize(GLfloat side);
+		void setSide(GLfloat side);
 		void setRotation(Rotation rotation);
 		void setPosition(Position position);
-		void setScale(Position scale);
+		void setScale(Scale scale);
 		void setColor(Color color);
+		GLfloat getSide();
 
 	private:
 		GLfloat side;
 		Rotation rotation;
 		Position position;
-		Position scale;
+		Scale scale;
 		Color color;
 };
 
