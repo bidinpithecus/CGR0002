@@ -23,6 +23,12 @@ class Position {
 		GLfloat getY();
 		GLfloat getZ();
 
+		float euclidianDistance(Position position);
+		void plus(Position position);
+		void minus(Position position);
+		void divide(Position position);
+		void mult(Position position);
+
 	private:
 		GLfloat x;
 		GLfloat y;

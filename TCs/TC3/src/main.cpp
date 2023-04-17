@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include "Boid.hpp"
 #include "Color.hpp"
 #include "Shapes.hpp"
 #include <GL/glu.h>
@@ -19,7 +20,10 @@ Position floorPosition = Position(0, 0, 0);
 
 GLUquadricObj* pMoon;
 
+std::vector<Boid> swarm;
+
 const GLfloat moonRadius = 5;
+const int numOfBoids = 50;
 
 void drawMoon() {
 	pMoon = gluNewQuadric();
@@ -48,6 +52,16 @@ void drawMoon() {
     glPopMatrix();
 }
 
+void drawFlocks(int limitX, int limitY, int limitZ) {
+	for (Boid boid : swarm) {
+		calculateNeighbors(&swarm, 1);
+		boid.edges(10, 10, 10);
+		boid.applyBehaviour();
+		boid.update();
+		boid.show();
+	}
+}
+
 // Called to draw scene
 void drawScene(void) {
 	drawMoon();
@@ -65,9 +79,15 @@ void drawScene(void) {
 	cube.setScale(scale);
 	cube.setColor(Color(0x0B3405));
 	cube.draw();
+
+	drawFlocks(15, 10, 15);
 }
 
 int main(int argc, char *argv[]) {
+	for (int i = 0; i < numOfBoids; i++) {
+		swarm.push_back(Boid());
+	}
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
