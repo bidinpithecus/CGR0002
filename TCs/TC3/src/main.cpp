@@ -55,7 +55,7 @@ void drawMoon() {
 void drawFlocks(int limitX, int limitY, int limitZ) {
 	for (Boid boid : swarm) {
 		calculateNeighbors(&swarm, 1);
-		boid.edges(10, 10, 10);
+		boid.edges(limitX, limitY, limitZ);
 		boid.applyBehaviour();
 		boid.update();
 		boid.show();

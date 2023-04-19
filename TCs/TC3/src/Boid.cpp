@@ -203,17 +203,17 @@ void Boid::addNeighbour(Boid boid) {
 */
 void calculateNeighbors(std::vector<Boid>* swarm, float bound) {
 	std::vector<std::pair<Boid, std::vector<float>>> distances;
-	for (int i = 0; i < swarm->size(); i++) {
+	for (long unsigned int i = 0; i < swarm->size(); i++) {
 		std::vector<float> distance;
-		for (int j = 0; j < swarm->size(); j++) {
+		for (long unsigned int j = 0; j < swarm->size(); j++) {
 			distance.push_back(swarm->at(i).getPosition().euclidianDistance(swarm->at(j).getPosition()));
 		}
 		distances.push_back(std::make_pair(swarm->at(i), distance));
 	}
 
-	for(int i = 0; i < distances.size(); i++) {
+	for(long unsigned int i = 0; i < distances.size(); i++) {
 		std::vector<float> distance = distances.at(i).second;
-		for(int j = i + 1; j < swarm->size(); j++) {
+		for(long unsigned int j = i + 1; j < swarm->size(); j++) {
 			if(distance[j] <= bound) {
 				swarm->at(i).addNeighbour(distances.at(i).first);
 			}
