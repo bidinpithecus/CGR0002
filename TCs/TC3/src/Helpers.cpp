@@ -1,6 +1,6 @@
 #include "Helpers.hpp"
 
-const int square(const float num) {
+int square(const float num) {
 	return num * num;
 }
 

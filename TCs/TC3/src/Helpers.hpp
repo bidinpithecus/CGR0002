@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 
 Position normalize(Position position);
-const int square(const float num);
+int square(const float num);
 int randomNum(int min, int max);
 float randomFloat(float min, float max);
 float euclidianNormal(Position position);
