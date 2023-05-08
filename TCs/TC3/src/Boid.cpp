@@ -11,8 +11,8 @@ Boid::Boid(Position position) {
 
 Boid::Boid() {
 	this->position = Position(randomFloat(-5, 5), randomFloat(2, 3), randomFloat(-5, 5));
-	this->velocity = Position(randomFloat(-0.15, 0.15), 0, randomFloat(-0.15, 0.15));
-	this->acceleration = Position(randomFloat(-0.01, 0.01), 0, randomFloat(-0.01, 0.01));
+	this->velocity = Position(randomFloat(0, 0.15), 0, randomFloat(0, 0.15));
+	this->acceleration = Position(randomFloat(0, 0.01), 0, randomFloat(0, 0.01));
 	this->maxForce = 0.3;
 	this->maxSpeed = 0.5;
 }
@@ -20,38 +20,33 @@ Boid::Boid() {
 Boid::~Boid() {}
 
 void Boid::update() {
-    // Add small random acceleration
-    acceleration.plus(Position(randomFloat(-0.1, 0.1), 0, randomFloat(-0.1, 0.1)));
-
-    velocity.plus(acceleration);
-    position.plus(velocity);
+	position = position + velocity;
+	velocity = velocity + acceleration;
 
     // Limit velocity
     double speed = euclidianNormal(velocity);
     if (speed > maxSpeed) {
-        velocity.divide(Position(speed, 0, speed));
-        velocity.mult(Position(maxSpeed, 0, maxSpeed));
+        velocity = (velocity / Position(speed, 0, speed)) * Position(maxSpeed, maxSpeed, maxSpeed);
     }
-
     acceleration = Position(0, 0, 0);
 }
 
-void Boid::show() {
+void Boid::show(GLfloat radius, Color color) {
 	GLUquadric* pObj;
 
 	pObj = gluNewQuadric();
 	gluQuadricNormals(pObj, GLU_SMOOTH);
 
 	Rotation rotation = Rotation();
-	Sphere sphere = Sphere(pObj, 0.1, 5, 5, rotation, this->position, Color(0x000000));
+	Sphere sphere = Sphere(pObj, radius, 50, 50, rotation, this->position, color);
 	sphere.draw();
 }
 
 void Boid::edges(float limitX, float limitY, float limitZ) {
 	if (this->position.getX() > limitX) {
-		this->position.setX(-limitX);
+		this->position.setX(0);
 	} else if (this->position.getX() < -limitX) {
-		this->position.setX(limitX);
+		this->position.setX(0);
 	}
 
 	if (this->position.getY() > limitY) {
@@ -61,9 +56,9 @@ void Boid::edges(float limitX, float limitY, float limitZ) {
 	}
 
 	if (this->position.getZ() > limitZ) {
-		this->position.setZ(-limitZ);
+		this->position.setZ(0);
 	} else if (this->position.getZ() < -limitZ) {
-		this->position.setZ(limitZ);
+		this->position.setZ(0);
 	}
 }
 
@@ -73,15 +68,15 @@ Position Boid::align() {
     Position avgVector(0, 0, 0);
 
     for (Boid boid : this->neighbors) {
-		avgVector.plus(boid.velocity);
+		avgVector = avgVector + boid.velocity;
 		total++;
     }
 
     if (total) {
-        avgVector.divide(Position(total, total, total));
+		avgVector = avgVector / Position(total, total, total);
         avgVector = normalize(avgVector);
-        avgVector.mult(Position(maxSpeed, maxSpeed, maxSpeed));
-        avgVector.minus(velocity);
+		avgVector = avgVector * Position(maxSpeed, maxSpeed, maxSpeed);
+		avgVector = avgVector - this->velocity;
 		steering = avgVector;
     }
 
@@ -93,26 +88,26 @@ Position Boid::cohesion() {
     int total = 0;
     Position centerOfMass(0, 0, 0);
 
-    for (const Boid& boid : this->neighbors) {
-		centerOfMass.plus(boid.position);
+    for (Boid& boid : this->neighbors) {
+		centerOfMass = centerOfMass + boid.position;
 		total++;
     }
 
     if (this->neighbors.size()) {
-        centerOfMass.divide(Position(total, total, total));
-        centerOfMass.minus(position);
+        centerOfMass = centerOfMass / Position(total, total, total);
+		centerOfMass = centerOfMass - this->position;
 		Position vecToCom = centerOfMass;
         if (euclidianNormal(vecToCom) > 0) {
             vecToCom = normalize(vecToCom);
-            vecToCom.mult(Position(maxSpeed, maxSpeed, maxSpeed));
+			vecToCom = vecToCom * Position(maxSpeed, maxSpeed, maxSpeed);
         }
 
-        vecToCom.minus(velocity);
+		vecToCom = vecToCom - this->velocity;
 		steering = vecToCom;
 
         if (euclidianNormal(steering) > maxForce) {
             steering = normalize(steering);
-            steering.mult(Position(maxForce, maxForce, maxForce));
+			steering = steering * Position(maxForce, maxForce, maxForce);
         }
     }
 
@@ -126,28 +121,27 @@ Position Boid::separation() {
 
     for (auto boid : this->neighbors) {
 		Position diff = boid.position;
-		diff.minus(position);
+		diff = diff - this->position;
 		double distance = euclidianNormal(diff);
-		// printf("(%lf, %lf, %lf)\n", position.getX(), position.getY(), position.getZ());
-		diff.divide(Position(distance, distance, distance));
-		avgVector.plus(diff);
+		diff = diff / Position(distance, distance, distance);
+		avgVector = avgVector + diff;
 		total++;
     }
 
     if (total) {
-        avgVector.divide(Position(total, total, total));
+		avgVector = avgVector / Position(total, total, total);
         avgVector = normalize(avgVector);
 
         if (euclidianNormal(steering)) {
-            avgVector.mult(Position(maxSpeed, maxSpeed, maxSpeed));
+			avgVector = avgVector * Position(maxSpeed, maxSpeed, maxSpeed);
         }
 
-        avgVector.minus(velocity);
+		avgVector = avgVector - this->velocity;
 		steering = avgVector;
 
         if (euclidianNormal(steering) > maxForce) {
             steering = normalize(steering);
-            steering.mult(Position(maxForce, maxForce, maxForce));
+			steering = steering * Position(maxForce, maxForce, maxForce);
         }
     }
 
@@ -159,9 +153,9 @@ void Boid::applyBehaviour() {
 	Position cohesion = this->cohesion();
 	Position separation = this->separation();
 
-	this->acceleration.plus(alignment);
-	this->acceleration.plus(cohesion);
-	this->acceleration.plus(separation);
+	this->acceleration = this->acceleration + alignment;
+	this->acceleration = this->acceleration + cohesion;
+	this->acceleration = this->acceleration + separation;
 }
 
 std::vector<Boid> Boid::getNeighbors() {
@@ -201,8 +195,10 @@ void Boid::addNeighbour(Boid boid) {
 }
 
 /*
-	Not normalized, I think this will be a problem;
-	Also does not seem optimized, probably some unnecessary loops
+	Distances not normalized, I think this will be a problem,
+	Will do after it start working.
+	Also does not seem optimized, probably some unnecessary loops.
+	Take a look at quadtree and octree (maybe a better of doing so)
 */
 void calculateNeighbors(std::vector<Boid> &swarm, float bound) {
 	std::vector<Boid> empty;

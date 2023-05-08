@@ -30,6 +30,11 @@ class Position {
 		void divide(Position position);
 		void mult(Position position);
 
+		Position operator+(Position position);
+		Position operator-(Position position);
+		Position operator*(Position position);
+		Position operator/(Position position);
+
 	private:
 		GLfloat x;
 		GLfloat y;

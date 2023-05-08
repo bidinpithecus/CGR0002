@@ -67,34 +67,23 @@ float Position::euclideanDistanceSquared(const Position& v) {
     return dx * dx + dy * dy + dz * dz;
 }
 
-void Position::plus(Position position) {
-	this->x += position.getX();
-	this->y += position.getY();
-	this->z += position.getZ();
+Position Position::operator+(Position position) {
+	return Position(this->getX() + position.getX(), this->getY() + position.getY(), this->getZ() + position.getZ());
 }
 
-void Position::minus(Position position) {
-	this->x -= position.getX();
-	this->y -= position.getY();
-	this->z -= position.getZ();
+Position Position::operator-(Position position) {
+	return Position(this->getX() - position.getX(), this->getY() - position.getY(), this->getZ() - position.getZ());
 }
 
-void Position::divide(Position position) {
-    if (position.getX() != 0) {
-        this->x /= position.getX();
-    }
-    if (position.getY() != 0) {
-        this->y /= position.getY();
-    }
-    if (position.getZ() != 0) {
-        this->z /= position.getZ();
-    }
+Position Position::operator*(Position position) {
+	return Position(this->getX() * position.getX(), this->getY() * position.getY(), this->getZ() * position.getZ());
 }
 
-void Position::mult(Position position) {
-	this->x *= position.getX();
-	this->y *= position.getY();
-	this->z *= position.getZ();
+Position Position::operator/(Position position) {
+	if (!position.getX()) position.setX(1.0);
+	if (!position.getY()) position.setY(1.0);
+	if (!position.getZ()) position.setZ(1.0);
+	return Position(this->getX() / position.getX(), this->getY() / position.getY(), this->getZ() / position.getZ());
 }
 
 // Scale stuff

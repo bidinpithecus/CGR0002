@@ -22,8 +22,8 @@ GLUquadricObj* pMoon;
 
 std::vector<Boid> swarm;
 
-const GLfloat moonRadius = 5;
-const int numOfBoids = 20;
+const GLfloat moonRadius = 10;
+const int numOfBoids = 100;
 
 void drawMoon() {
 	pMoon = gluNewQuadric();
@@ -56,14 +56,11 @@ void drawFlocks(int limitX, int limitY, int limitZ) {
 	calculateNeighbors(swarm, 0.5);
 
 	for (auto& boid : swarm) {
-		boid.edges(limitX, limitY, limitZ);
 		boid.applyBehaviour();
 		boid.update();
-		printf("(%.3lf, %.3lf, %.3lf) - velocity: (%.3lf, %.3lf, %.3lf) - acceleration: (%.3lf, %.3lf, %.3lf)\n",
-			boid.getPosition().getX(), boid.getPosition().getY(), boid.getPosition().getZ(),
-			boid.getVelocity().getX(), boid.getVelocity().getY(), boid.getVelocity().getZ(),
-			boid.getAcceleration().getX(), boid.getAcceleration().getY(), boid.getAcceleration().getZ());
-		boid.show();
+		boid.edges(limitX, limitY, limitZ);
+		printf("(%.3lf, %.3lf, %.3lf) - velocity: (%.3lf, %.3lf, %.3lf) - acceleration: (%.3lf, %.3lf, %.3lf)\n", boid.getPosition().getX(), boid.getPosition().getY(), boid.getPosition().getZ(), boid.getVelocity().getX(), boid.getVelocity().getY(), boid.getVelocity().getZ(), boid.getAcceleration().getX(), boid.getAcceleration().getY(), boid.getAcceleration().getZ());
+		boid.show(randomFloat(0.025, 0.035), Color(0x000000));
 	}
 	printf("=================\n");
 }

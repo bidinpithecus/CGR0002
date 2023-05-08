@@ -12,7 +12,7 @@ class Boid {
 		Boid();
 		~Boid();
 		void update();
-		void show();
+		void show(GLfloat radius, Color color);
 		void edges(float limitX, float limitY, float limitZ);
 		Position align();
 		Position cohesion();
@@ -37,7 +37,6 @@ class Boid {
 		float maxForce;
 		float maxSpeed;
 		float maxPerception;
-
 };
 
 void calculateNeighbors(std::vector<Boid> &swarm, float bound);
