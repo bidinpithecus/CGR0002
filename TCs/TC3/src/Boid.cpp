@@ -1,33 +1,36 @@
 #include "Boid.hpp"
-#include <stdio.h>
+#include <iostream>
 
 Boid::Boid(Position position) {
 	this->position = position;
-	this->velocity = Position(randomFloat(-5, 5), randomFloat(-1, 1), randomFloat(-5, 5));
-	this->acceleration = Position(randomFloat(-0.25, 0.25), randomFloat(-1, 1), randomFloat(-0.25, 0.25));
+	this->velocity = Position(randomFloat(-0.25, 0.25), randomFloat(-0.25, 0.25), randomFloat(-0.25, 0.25));
+	this->acceleration = Position(randomFloat(-0.1, 0.1), randomFloat(-1, 1), randomFloat(-0.1, 0.1));
 	this->maxForce = 0.3;
 	this->maxSpeed = 5;
 }
 
 Boid::Boid() {
-	this->position = Position(randomFloat(-10, 10), randomFloat(8, 12), randomFloat(-10, 10));
-	this->velocity = Position(randomFloat(-5, 5), randomFloat(-1, 1), randomFloat(-5, 5));
-	this->acceleration = Position(randomFloat(-0.25, 0.25), randomFloat(-1, 1), randomFloat(-0.25, 0.25));
+	this->position = Position(randomFloat(-5, 5), randomFloat(2, 3), randomFloat(-5, 5));
+	this->velocity = Position(randomFloat(-0.15, 0.15), 0, randomFloat(-0.15, 0.15));
+	this->acceleration = Position(randomFloat(-0.01, 0.01), 0, randomFloat(-0.01, 0.01));
 	this->maxForce = 0.3;
-	this->maxSpeed = 5;
+	this->maxSpeed = 0.5;
 }
 
 Boid::~Boid() {}
 
 void Boid::update() {
-    position.plus(velocity);
+    // Add small random acceleration
+    acceleration.plus(Position(randomFloat(-0.1, 0.1), 0, randomFloat(-0.1, 0.1)));
+
     velocity.plus(acceleration);
+    position.plus(velocity);
 
     // Limit velocity
-    float velocityNormal = euclidianNormal(velocity);
-    if (velocityNormal > maxSpeed) {
-        velocity.divide(Position(velocityNormal, velocityNormal, velocityNormal));
-        velocity.mult(Position(maxSpeed, maxSpeed, maxSpeed));
+    double speed = euclidianNormal(velocity);
+    if (speed > maxSpeed) {
+        velocity.divide(Position(speed, 0, speed));
+        velocity.mult(Position(maxSpeed, 0, maxSpeed));
     }
 
     acceleration = Position(0, 0, 0);
@@ -40,7 +43,7 @@ void Boid::show() {
 	gluQuadricNormals(pObj, GLU_SMOOTH);
 
 	Rotation rotation = Rotation();
-	Sphere sphere = Sphere(pObj, 0.1, 10, 10, rotation, this->position, Color(0x000000));
+	Sphere sphere = Sphere(pObj, 0.1, 5, 5, rotation, this->position, Color(0x000000));
 	sphere.draw();
 }
 
@@ -52,8 +55,8 @@ void Boid::edges(float limitX, float limitY, float limitZ) {
 	}
 
 	if (this->position.getY() > limitY) {
-		this->position.setY(-limitY);
-	} else if (this->position.getY() < -limitY) {
+		this->position.setY(0);
+	} else if (this->position.getY() < 0) {
 		this->position.setY(limitY);
 	}
 
@@ -70,12 +73,11 @@ Position Boid::align() {
     Position avgVector(0, 0, 0);
 
     for (Boid boid : this->neighbors) {
-		printf("(%lf, %lf, %lf)\n", boid.getPosition().getX(), boid.getPosition().getY(), boid.getPosition().getZ());
 		avgVector.plus(boid.velocity);
 		total++;
     }
 
-    if (this->neighbors.size()) {
+    if (total) {
         avgVector.divide(Position(total, total, total));
         avgVector = normalize(avgVector);
         avgVector.mult(Position(maxSpeed, maxSpeed, maxSpeed));
@@ -122,20 +124,21 @@ Position Boid::separation() {
     int total = 0;
     Position avgVector(0, 0, 0);
 
-    for (const Boid& boid : neighbors) {
-		position.minus(boid.position);
-		Position diff = position;
+    for (auto boid : this->neighbors) {
+		Position diff = boid.position;
+		diff.minus(position);
 		double distance = euclidianNormal(diff);
+		// printf("(%lf, %lf, %lf)\n", position.getX(), position.getY(), position.getZ());
 		diff.divide(Position(distance, distance, distance));
 		avgVector.plus(diff);
 		total++;
     }
 
-    if (total > 0) {
+    if (total) {
         avgVector.divide(Position(total, total, total));
         avgVector = normalize(avgVector);
 
-        if (euclidianNormal(steering) > 0) {
+        if (euclidianNormal(steering)) {
             avgVector.mult(Position(maxSpeed, maxSpeed, maxSpeed));
         }
 
@@ -173,7 +176,7 @@ Position Boid::getPosition() {
 	return this->position;
 }
 
-void Boid::setNeighbors(Position position) {
+void Boid::setPosition(Position position) {
 	this->position = position;
 }
 
@@ -201,22 +204,28 @@ void Boid::addNeighbour(Boid boid) {
 	Not normalized, I think this will be a problem;
 	Also does not seem optimized, probably some unnecessary loops
 */
-void calculateNeighbors(std::vector<Boid>* swarm, float bound) {
+void calculateNeighbors(std::vector<Boid> &swarm, float bound) {
+	std::vector<Boid> empty;
 	std::vector<std::pair<Boid, std::vector<float>>> distances;
-	for (long unsigned int i = 0; i < swarm->size(); i++) {
+	for (long unsigned int i = 0; i < swarm.size(); i++) {
+		swarm.at(i).setNeighbors(empty);
 		std::vector<float> distance;
-		for (long unsigned int j = 0; j < swarm->size(); j++) {
-			distance.push_back(swarm->at(i).getPosition().euclidianDistance(swarm->at(j).getPosition()));
+		for (long unsigned int j = 0; j < swarm.size(); j++) {
+			distance.push_back(swarm.at(i).getPosition().euclideanDistance(swarm.at(j).getPosition()));
 		}
-		distances.push_back(std::make_pair(swarm->at(i), distance));
+		distances.push_back(std::make_pair(swarm.at(i), distance));
 	}
 
-	for(long unsigned int i = 0; i < distances.size(); i++) {
-		std::vector<float> distance = distances.at(i).second;
-		for(long unsigned int j = i + 1; j < swarm->size(); j++) {
-			if(distance[j] <= bound) {
-				swarm->at(i).addNeighbour(distances.at(i).first);
+	int pairNum = 0;
+	for (auto pair : distances) {
+		auto distance = distances.at(pairNum).second;
+
+		int distNum = 0;
+		for (auto dist : distance) {
+			if (dist <= bound) {
+				swarm.at(pairNum).addNeighbour(distances.at(distNum).first);
 			}
 		}
+		pairNum++;
 	}
 }

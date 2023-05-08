@@ -2,7 +2,7 @@
 #include "Boid.hpp"
 #include "Color.hpp"
 #include "Shapes.hpp"
-#include <GL/glu.h>
+#include <unistd.h>
 
 Color color;
 
@@ -23,7 +23,7 @@ GLUquadricObj* pMoon;
 std::vector<Boid> swarm;
 
 const GLfloat moonRadius = 5;
-const int numOfBoids = 50;
+const int numOfBoids = 20;
 
 void drawMoon() {
 	pMoon = gluNewQuadric();
@@ -53,13 +53,19 @@ void drawMoon() {
 }
 
 void drawFlocks(int limitX, int limitY, int limitZ) {
-	for (Boid boid : swarm) {
-		calculateNeighbors(&swarm, 1);
+	calculateNeighbors(swarm, 0.5);
+
+	for (auto& boid : swarm) {
 		boid.edges(limitX, limitY, limitZ);
 		boid.applyBehaviour();
 		boid.update();
+		printf("(%.3lf, %.3lf, %.3lf) - velocity: (%.3lf, %.3lf, %.3lf) - acceleration: (%.3lf, %.3lf, %.3lf)\n",
+			boid.getPosition().getX(), boid.getPosition().getY(), boid.getPosition().getZ(),
+			boid.getVelocity().getX(), boid.getVelocity().getY(), boid.getVelocity().getZ(),
+			boid.getAcceleration().getX(), boid.getAcceleration().getY(), boid.getAcceleration().getZ());
 		boid.show();
 	}
+	printf("=================\n");
 }
 
 // Called to draw scene
@@ -80,7 +86,8 @@ void drawScene(void) {
 	cube.setColor(Color(0x0B3405));
 	cube.draw();
 
-	drawFlocks(15, 10, 15);
+	drawFlocks(5, 10, 5);
+	usleep(80000);
 }
 
 int main(int argc, char *argv[]) {

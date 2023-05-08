@@ -56,8 +56,15 @@ GLfloat Position::getZ() {
 	return this->z;
 }
 
-float Position::euclidianDistance(Position position) {
+float Position::euclideanDistance(Position position) {
 	return sqrt(pow(this->getX() - position.getX(), 2) + pow(this->getY() - position.getY(), 2) + pow(this->getZ() - position.getZ(), 2));
+}
+
+float Position::euclideanDistanceSquared(const Position& v) {
+    float dx = this->x - v.x;
+    float dy = this->y - v.y;
+    float dz = this->z - v.z;
+    return dx * dx + dy * dy + dz * dz;
 }
 
 void Position::plus(Position position) {
@@ -73,9 +80,15 @@ void Position::minus(Position position) {
 }
 
 void Position::divide(Position position) {
-	this->x /= position.getX();
-	this->y /= position.getY();
-	this->z /= position.getZ();
+    if (position.getX() != 0) {
+        this->x /= position.getX();
+    }
+    if (position.getY() != 0) {
+        this->y /= position.getY();
+    }
+    if (position.getZ() != 0) {
+        this->z /= position.getZ();
+    }
 }
 
 void Position::mult(Position position) {

@@ -17,9 +17,11 @@ float randomFloat(float min, float max) {
 }
 
 Position normalize(Position position) {
-	float magnitude = sqrt(square(position.getX()) + square(position.getY()) + square(position.getZ()));
-
-	return Position(position.getX() / magnitude, position.getY() / magnitude, position.getZ() / magnitude);
+    float magnitude = sqrt(square(position.getX()) + square(position.getY()) + square(position.getZ()));
+    if (magnitude == 0) {
+        return Position(0, 0, 0);
+    }
+    return Position(position.getX() / magnitude, position.getY() / magnitude, position.getZ() / magnitude);
 }
 
 float euclidianNormal(Position position) {

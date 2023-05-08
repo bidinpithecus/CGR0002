@@ -23,7 +23,7 @@ class Boid {
 		std::vector<Boid> getNeighbors();
 		void setNeighbors(std::vector<Boid> neighbors);
 		Position getPosition();
-		void setNeighbors(Position position);
+		void setPosition(Position position);
 		Position getVelocity();
 		void setVelocity(Position velocity);
 		Position getAcceleration();
@@ -40,6 +40,6 @@ class Boid {
 
 };
 
-void calculateNeighbors(std::vector<Boid>* swarm, float bound);
+void calculateNeighbors(std::vector<Boid> &swarm, float bound);
 
 #endif

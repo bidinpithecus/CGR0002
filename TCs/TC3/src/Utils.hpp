@@ -23,7 +23,8 @@ class Position {
 		GLfloat getY();
 		GLfloat getZ();
 
-		float euclidianDistance(Position position);
+		float euclideanDistance(Position position);
+		float euclideanDistanceSquared(const Position& v);
 		void plus(Position position);
 		void minus(Position position);
 		void divide(Position position);
