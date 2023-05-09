@@ -52,7 +52,7 @@ void Boid::update() {
     // Limit velocity
     double speed = euclidianNormal(velocity);
     if (speed > maxSpeed) {
-        velocity = (velocity / Position(speed, speed, speed)) * Position(maxSpeed, maxSpeed, maxSpeed);
+        velocity = (velocity / speed) * maxSpeed;
     }
 }
 

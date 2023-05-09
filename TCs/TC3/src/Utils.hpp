@@ -32,8 +32,6 @@ class Position {
 
 		Position operator+(Position position);
 		Position operator-(Position position);
-		Position operator*(Position position);
-		Position operator/(Position position);
 
 		Position operator+(float num);
 		Position operator-(float num);
