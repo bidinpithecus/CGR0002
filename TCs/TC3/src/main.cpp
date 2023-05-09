@@ -2,6 +2,7 @@
 #include "Boid.hpp"
 #include "Color.hpp"
 #include "Shapes.hpp"
+#include <cmath>
 #include <unistd.h>
 
 Color color;
@@ -15,15 +16,17 @@ Position position;
 Scale scale;
 Rotation rotation;
 
-Scale floorScale = Scale(10, 1, 10);
-Position floorPosition = Position(0, 0, 0);
+const Position floorPosition = Position(0, 0, 0);
+const int floorSide = 10;
+Scale floorScale = Scale(floorSide, floorSide * 0.1, floorSide);
+const GLfloat moonRadius = 10;
+const int numOfBoids = 200;
+float grassY = floorScale.getY() / 2.0 + (floorScale.getY() * 0.1) / 2.0;
+
 
 GLUquadricObj* pMoon;
 
 std::vector<Boid> swarm;
-
-const GLfloat moonRadius = 10;
-const int numOfBoids = 100;
 
 void drawMoon() {
 	pMoon = gluNewQuadric();
@@ -52,17 +55,17 @@ void drawMoon() {
     glPopMatrix();
 }
 
-void drawFlocks(int limitX, int limitY, int limitZ) {
-	calculateNeighbors(swarm, 0.5);
+void drawFlocks(Position lowerLimit, Position upperLimit) {
+	calculateNeighbors(swarm, 1);
 
 	for (auto& boid : swarm) {
-		boid.applyBehaviour();
+		boid.applyBehaviour(randomFloat(5.0, 5.5), randomFloat(0.01, 0.02), randomFloat(20.0, 20.5));
+		boid.edges(lowerLimit, upperLimit);
 		boid.update();
-		boid.edges(limitX, limitY, limitZ);
-		printf("(%.3lf, %.3lf, %.3lf) - velocity: (%.3lf, %.3lf, %.3lf) - acceleration: (%.3lf, %.3lf, %.3lf)\n", boid.getPosition().getX(), boid.getPosition().getY(), boid.getPosition().getZ(), boid.getVelocity().getX(), boid.getVelocity().getY(), boid.getVelocity().getZ(), boid.getAcceleration().getX(), boid.getAcceleration().getY(), boid.getAcceleration().getZ());
+		// printf("(%.3lf, %.3lf, %.3lf) - velocity: (%.3lf, %.3lf, %.3lf) - acceleration: (%.3lf, %.3lf, %.3lf)\n", boid.getPosition().getX(), boid.getPosition().getY(), boid.getPosition().getZ(), boid.getVelocity().getX(), boid.getVelocity().getY(), boid.getVelocity().getZ(), boid.getAcceleration().getX(), boid.getAcceleration().getY(), boid.getAcceleration().getZ());
 		boid.show(randomFloat(0.025, 0.035), Color(0x000000));
 	}
-	printf("=================\n");
+	// printf("=================\n");
 }
 
 // Called to draw scene
@@ -77,19 +80,19 @@ void drawScene(void) {
 	scale = floorScale;
 	scale.setY(floorScale.getY() * 0.1);
 	position = floorPosition;
-	position.setY(floorScale.getY() / 2.0 + scale.getY() / 2.0);
+	position.setY(grassY);
 	cube.setPosition(position);
 	cube.setScale(scale);
 	cube.setColor(Color(0x0B3405));
 	cube.draw();
 
-	drawFlocks(5, 10, 5);
-	usleep(80000);
+	drawFlocks(Position(-floorSide / 2.0, grassY * 10, -floorSide / 2.0), Position(floorSide / 2.0, floorSide, floorSide / 2.0));
 }
 
 int main(int argc, char *argv[]) {
+	srand(time(0));
 	for (int i = 0; i < numOfBoids; i++) {
-		swarm.push_back(Boid());
+		swarm.push_back(Boid(Position(-floorSide / 2.0, grassY * 10, -floorSide / 2.0), Position(floorSide / 2.0, floorSide, floorSide / 2.0)));
 	}
 
 	glutInit(&argc, argv);

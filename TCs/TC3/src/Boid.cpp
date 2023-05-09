@@ -2,20 +2,46 @@
 #include <iostream>
 
 Boid::Boid(Position position) {
-	this->position = position;
-	this->velocity = Position(randomFloat(-0.25, 0.25), randomFloat(-0.25, 0.25), randomFloat(-0.25, 0.25));
-	this->acceleration = Position(randomFloat(-0.1, 0.1), randomFloat(-1, 1), randomFloat(-0.1, 0.1));
-	this->maxForce = 0.3;
-	this->maxSpeed = 5;
+	Position newPos;
+	Position newVel;
+	Position newAcc;
+	newPos = position;
+
+	newVel.setX(randomFloat(-position.getX(), position.getX()));
+	newVel.setY(randomFloat(-position.getY(), position.getY()));
+	newVel.setZ(randomFloat(-position.getZ(), position.getZ()));
+
+	newAcc.setX(randomFloat(-position.getX(), position.getX()));
+	newAcc.setY(randomFloat(-position.getY(), position.getY()));
+	newAcc.setZ(randomFloat(-position.getZ(), position.getZ()));
+
+	this->position = newPos;
+	this->velocity = newVel / 10;
+	this->acceleration = newAcc / 15;
+	this->maxSpeed = randomFloat(position.getX() / 40, position.getX() / 10);
 }
 
-Boid::Boid() {
-	this->position = Position(randomFloat(-5, 5), randomFloat(2, 3), randomFloat(-5, 5));
-	this->velocity = Position(randomFloat(0, 0.15), 0, randomFloat(0, 0.15));
-	this->acceleration = Position(randomFloat(0, 0.01), 0, randomFloat(0, 0.01));
-	this->maxForce = 0.3;
-	this->maxSpeed = 0.5;
+Boid::Boid(Position lowerLimit, Position upperLimit) {
+	Position newVel;
+	Position newAcc;
+	this->position.setX(randomFloat(lowerLimit.getX(), upperLimit.getX()));
+	this->position.setY(randomFloat(lowerLimit.getY(), upperLimit.getY()));
+	this->position.setZ(randomFloat(lowerLimit.getZ(), upperLimit.getZ()));
+
+	newVel.setX(randomFloat(upperLimit.getX() / 100, upperLimit.getX() / 10));
+	newVel.setY(randomFloat(upperLimit.getY() / 1000, upperLimit.getY() / 500));
+	newVel.setZ(randomFloat(upperLimit.getZ() / 100, upperLimit.getZ() / 10));
+
+	newAcc.setX(randomFloat(upperLimit.getX() / 800, upperLimit.getX() / 80));
+	newAcc.setY(randomFloat(upperLimit.getY() / 5000, upperLimit.getY() / 1000));
+	newAcc.setZ(randomFloat(upperLimit.getZ() / 800, upperLimit.getZ() / 80));
+
+	this->velocity = newVel / 10;
+	this->acceleration = newAcc / randomFloat(14.5, 15.5);
+	this->maxSpeed = randomFloat(upperLimit.getX() / 99.5, upperLimit.getX() / 100.5);
 }
+
+Boid::Boid() {};
 
 Boid::~Boid() {}
 
@@ -26,9 +52,8 @@ void Boid::update() {
     // Limit velocity
     double speed = euclidianNormal(velocity);
     if (speed > maxSpeed) {
-        velocity = (velocity / Position(speed, 0, speed)) * Position(maxSpeed, maxSpeed, maxSpeed);
+        velocity = (velocity / Position(speed, speed, speed)) * Position(maxSpeed, maxSpeed, maxSpeed);
     }
-    acceleration = Position(0, 0, 0);
 }
 
 void Boid::show(GLfloat radius, Color color) {
@@ -38,53 +63,42 @@ void Boid::show(GLfloat radius, Color color) {
 	gluQuadricNormals(pObj, GLU_SMOOTH);
 
 	Rotation rotation = Rotation();
-	Sphere sphere = Sphere(pObj, radius, 50, 50, rotation, this->position, color);
+	Sphere sphere = Sphere(pObj, radius, 10, 10, rotation, this->position, color);
 	sphere.draw();
 }
 
-void Boid::edges(float limitX, float limitY, float limitZ) {
-	if (this->position.getX() > limitX) {
-		this->position.setX(0);
-	} else if (this->position.getX() < -limitX) {
-		this->position.setX(0);
+void Boid::edges(Position lowerLimit, Position upperLimit) {
+	if (this->position.getX() >= upperLimit.getX() || this->position.getX() <= lowerLimit.getX()) {
+		this->velocity.setX(-this->velocity.getX());
+		this->acceleration.setX(-this->acceleration.getX());
 	}
-
-	if (this->position.getY() > limitY) {
-		this->position.setY(0);
-	} else if (this->position.getY() < 0) {
-		this->position.setY(limitY);
+	if (this->position.getY() >= upperLimit.getY() || this->position.getY() <= lowerLimit.getY()) {
+		this->velocity.setY(-this->velocity.getY());
+		this->acceleration.setY(-this->acceleration.getY());
 	}
-
-	if (this->position.getZ() > limitZ) {
-		this->position.setZ(0);
-	} else if (this->position.getZ() < -limitZ) {
-		this->position.setZ(0);
+	if (this->position.getZ() >= upperLimit.getZ() || this->position.getZ() <= lowerLimit.getZ()) {
+		this->velocity.setZ(-this->velocity.getZ());
+		this->acceleration.setZ(-this->acceleration.getZ());
 	}
 }
 
-Position Boid::align() {
-    Position steering(0, 0, 0);
-    int total = 0;
-    Position avgVector(0, 0, 0);
+Position Boid::align(float matchingFactor) {
+	int total = 0;
+	Position avgVector(0, 0, 0);
 
-    for (Boid boid : this->neighbors) {
-		avgVector = avgVector + boid.velocity;
+	for (auto boid : this->neighbors) {
+		avgVector = avgVector + boid.getVelocity();
 		total++;
-    }
+	}
 
-    if (total) {
-		avgVector = avgVector / Position(total, total, total);
-        avgVector = normalize(avgVector);
-		avgVector = avgVector * Position(maxSpeed, maxSpeed, maxSpeed);
-		avgVector = avgVector - this->velocity;
-		steering = avgVector;
-    }
-
-    return steering;
+	if (total) {
+		avgVector = avgVector / total;
+		avgVector = (avgVector - this->velocity) * matchingFactor;
+	}
+	return avgVector;
 }
 
-Position Boid::cohesion() {
-    Position steering(0, 0, 0);
+Position Boid::cohesion(float centeringFactor) {
     int total = 0;
     Position centerOfMass(0, 0, 0);
 
@@ -93,69 +107,29 @@ Position Boid::cohesion() {
 		total++;
     }
 
-    if (this->neighbors.size()) {
-        centerOfMass = centerOfMass / Position(total, total, total);
-		centerOfMass = centerOfMass - this->position;
-		Position vecToCom = centerOfMass;
-        if (euclidianNormal(vecToCom) > 0) {
-            vecToCom = normalize(vecToCom);
-			vecToCom = vecToCom * Position(maxSpeed, maxSpeed, maxSpeed);
-        }
-
-		vecToCom = vecToCom - this->velocity;
-		steering = vecToCom;
-
-        if (euclidianNormal(steering) > maxForce) {
-            steering = normalize(steering);
-			steering = steering * Position(maxForce, maxForce, maxForce);
-        }
-    }
-
-    return steering;
-}
-
-Position Boid::separation() {
-    Position steering(0, 0, 0);
-    int total = 0;
-    Position avgVector(0, 0, 0);
-
-    for (auto boid : this->neighbors) {
-		Position diff = boid.position;
-		diff = diff - this->position;
-		double distance = euclidianNormal(diff);
-		diff = diff / Position(distance, distance, distance);
-		avgVector = avgVector + diff;
-		total++;
-    }
-
     if (total) {
-		avgVector = avgVector / Position(total, total, total);
-        avgVector = normalize(avgVector);
-
-        if (euclidianNormal(steering)) {
-			avgVector = avgVector * Position(maxSpeed, maxSpeed, maxSpeed);
-        }
-
-		avgVector = avgVector - this->velocity;
-		steering = avgVector;
-
-        if (euclidianNormal(steering) > maxForce) {
-            steering = normalize(steering);
-			steering = steering * Position(maxForce, maxForce, maxForce);
-        }
+        centerOfMass = centerOfMass / total;
+		centerOfMass = centerOfMass - this->position;
+		centerOfMass = centerOfMass * centeringFactor;
     }
 
-    return steering;
+    return centerOfMass;
 }
 
-void Boid::applyBehaviour() {
-	Position alignment = this->align();
-	Position cohesion = this->cohesion();
-	Position separation = this->separation();
+Position Boid::separation(float avoidFactor) {
+	Position move(0, 0, 0);
 
-	this->acceleration = this->acceleration + alignment;
-	this->acceleration = this->acceleration + cohesion;
-	this->acceleration = this->acceleration + separation;
+	for (auto boid : this->neighbors) {
+		move = move + (this->getPosition() - boid.getPosition());
+	}
+
+	return move * avoidFactor;
+}
+
+void Boid::applyBehaviour(float centeringFactor, float avoidingFactor, float matchingFactor) {
+	this->acceleration = this->acceleration + this->cohesion(centeringFactor);
+	this->acceleration = this->acceleration + this->separation(avoidingFactor);
+	this->acceleration = this->acceleration + this->align(matchingFactor);
 }
 
 std::vector<Boid> Boid::getNeighbors() {
@@ -207,7 +181,10 @@ void calculateNeighbors(std::vector<Boid> &swarm, float bound) {
 		swarm.at(i).setNeighbors(empty);
 		std::vector<float> distance;
 		for (long unsigned int j = 0; j < swarm.size(); j++) {
-			distance.push_back(swarm.at(i).getPosition().euclideanDistance(swarm.at(j).getPosition()));
+			if (i != j) {
+				distance.push_back(swarm.at(i).getPosition().euclideanDistance(swarm.at(j).getPosition()));
+
+			}
 		}
 		distances.push_back(std::make_pair(swarm.at(i), distance));
 	}

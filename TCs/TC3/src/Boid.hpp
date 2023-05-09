@@ -9,15 +9,16 @@
 class Boid {
 	public:
 		Boid(Position position);
+		Boid(Position lowerLimit, Position upperLimit);
 		Boid();
 		~Boid();
 		void update();
 		void show(GLfloat radius, Color color);
-		void edges(float limitX, float limitY, float limitZ);
-		Position align();
-		Position cohesion();
-		Position separation();
-		void applyBehaviour();
+		void edges(Position lowerLimit, Position upperLimit);
+		Position align(float matchingFactor);
+		Position cohesion(float centeringFactor);
+		Position separation(float avoidFactor);
+		void applyBehaviour(float centeringFactor, float avoidingFactor, float matchingFactor);
 		void addNeighbour(Boid boid);
 
 		std::vector<Boid> getNeighbors();
@@ -34,9 +35,7 @@ class Boid {
 		Position position;
 		Position velocity;
 		Position acceleration;
-		float maxForce;
 		float maxSpeed;
-		float maxPerception;
 };
 
 void calculateNeighbors(std::vector<Boid> &swarm, float bound);

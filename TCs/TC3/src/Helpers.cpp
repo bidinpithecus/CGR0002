@@ -10,10 +10,10 @@ int randomNum(int min, int max) {
 
 float randomFloat(float min, float max) {
     // Generate a random float between 0 and 1
-    double randomDouble = (double)rand() / RAND_MAX;
+    float scale = rand() / (float)RAND_MAX;
 
     // Scale the random double to the desired range between min and max
-    return min + randomDouble * (max - min);
+    return min + scale * (max - min);
 }
 
 Position normalize(Position position) {
@@ -26,4 +26,8 @@ Position normalize(Position position) {
 
 float euclidianNormal(Position position) {
 	return sqrt(square(position.getX()) + square(position.getY()) + square(position.getZ()));
+}
+
+float map(float value, float in_min, float in_max, float out_min, float out_max) {
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }

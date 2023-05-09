@@ -86,6 +86,24 @@ Position Position::operator/(Position position) {
 	return Position(this->getX() / position.getX(), this->getY() / position.getY(), this->getZ() / position.getZ());
 }
 
+Position Position::operator+(float num) {
+	return Position(this->getX() + num, this->getY() + num, this->getZ() + num);
+}
+
+Position Position::operator-(float num) {
+	return Position(this->getX() - num, this->getY() - num, this->getZ() - num);
+}
+
+Position Position::operator*(float num) {
+	return Position(this->getX() * num, this->getY() * num, this->getZ() * num);
+}
+
+Position Position::operator/(float num) {
+	float toDivide = num;
+	if (!num) toDivide = 1;
+	return Position(this->getX() / toDivide, this->getY() / toDivide, this->getZ() / toDivide);
+}
+
 // Scale stuff
 Scale::Scale() {};
 

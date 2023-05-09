@@ -13,7 +13,7 @@ int xPos = 0;
 int yPos = 0;
 bool isFullScreen = false;
 
-Camera camera = Camera(Position(0, 0, -1), Position(0.0f, -0.75f, 5.0f), Position(0.0f, 1.0f, 0.0f), Position(0, 0, 0), 0.05f, -4.0f);
+Camera camera = Camera(Position(0, 0, -1), Position(0.0f, 5, 5.0f), Position(0.0f, 1.0f, 0.0f), Position(0, 0, 0), 0.05f, -4.0f);
 
 // Change viewing volume and viewport.  Called when window is resized
 void resize(int width, int height) {
