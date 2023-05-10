@@ -20,7 +20,7 @@ const Position floorPosition = Position(0, 0, 0);
 const int floorSide = 10;
 Scale floorScale = Scale(floorSide, floorSide * 0.1, floorSide);
 const GLfloat moonRadius = 10;
-const int numOfBoids = 400;
+const int numOfBoids = 350;
 float grassY = floorScale.getY() / 2.0 + (floorScale.getY() * 0.1) / 2.0;
 
 GLUquadricObj* pMoon;
@@ -55,17 +55,16 @@ void drawMoon() {
 }
 
 void drawFlocks(Position lowerLimit, Position upperLimit) {
-	calculateNeighbors(swarm, 0.25);
+	calculateNeighbors(swarm, 0.175);
 
 	for (auto& boid : swarm) {
-		boid.applyBehaviour(randomFloat(5.0, 5.5), randomFloat(0.01, 0.02), randomFloat(20.0, 20.5));
+		boid.applyBehaviour(5, 0.01, 100);
 		boid.edges(lowerLimit, upperLimit);
 		boid.update();
 		boid.show(randomFloat(0.025, 0.035), Color(0x000000));
 	}
 }
 
-// Called to draw scene
 void drawScene(void) {
 	drawMoon();
 	// draw earth
@@ -83,13 +82,13 @@ void drawScene(void) {
 	cube.setColor(Color(0x0B3405));
 	cube.draw();
 
-	drawFlocks(Position(-floorSide / 2.0, grassY * 10, -floorSide / 2.0), Position(floorSide / 2.0, floorSide, floorSide / 2.0));
+	drawFlocks(Position(-floorSide / 2.0, grassY * 15, -floorSide / 2.0), Position(floorSide / 2.0, floorSide, floorSide / 2.0));
 }
 
 int main(int argc, char *argv[]) {
 	srand(time(0));
 	for (int i = 0; i < numOfBoids; i++) {
-		swarm.push_back(Boid(Position(-floorSide / 2.0, grassY * 10, -floorSide / 2.0), Position(floorSide / 2.0, floorSide, floorSide / 2.0)));
+		swarm.push_back(Boid(Position(-floorSide / 2.0, grassY * 15, -floorSide / 2.0), Position(floorSide / 2.0, floorSide, floorSide / 2.0)));
 	}
 
 	glutInit(&argc, argv);

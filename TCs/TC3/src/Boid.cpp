@@ -38,6 +38,8 @@ Boid::Boid(Position lowerLimit, Position upperLimit) {
 
 	this->velocity = newVel / 10;
 	this->acceleration = newAcc / randomFloat(14.5, 15.5);
+	// this->acceleration = newAcc / 15;
+	// this->maxSpeed = upperLimit.getX() / 100;
 	this->maxSpeed = randomFloat(upperLimit.getX() / 99.5, upperLimit.getX() / 100.5);
 }
 
@@ -49,7 +51,6 @@ void Boid::update() {
 	position = position + velocity;
 	velocity = velocity + acceleration;
 
-    // Limit velocity
     double speed = euclidianNormal(velocity);
     if (speed > maxSpeed) {
         velocity = (velocity / speed) * maxSpeed;
@@ -127,9 +128,8 @@ Position Boid::separation(float avoidFactor) {
 }
 
 void Boid::applyBehaviour(float centeringFactor, float avoidingFactor, float matchingFactor) {
-	this->acceleration = this->acceleration + this->cohesion(centeringFactor);
-	this->acceleration = this->acceleration + this->separation(avoidingFactor);
-	this->acceleration = this->acceleration + this->align(matchingFactor);
+	Position resultants = cohesion(centeringFactor) + separation(avoidingFactor) + align(matchingFactor);
+	this->acceleration = this->acceleration + resultants;
 }
 
 std::vector<Boid> Boid::getNeighbors() {
@@ -168,12 +168,6 @@ void Boid::addNeighbour(Boid boid) {
 	this->neighbors.push_back(boid);
 }
 
-/*
-	Distances not normalized, I think this will be a problem,
-	Will do after it start working.
-	Also does not seem optimized, probably some unnecessary loops.
-	Take a look at quadtree and octree (maybe a better of doing so)
-*/
 void calculateNeighbors(std::vector<Boid> &swarm, float bound) {
 	std::vector<Boid> empty;
 	std::vector<std::pair<Boid, std::vector<float>>> distances;
@@ -181,10 +175,7 @@ void calculateNeighbors(std::vector<Boid> &swarm, float bound) {
 		swarm.at(i).setNeighbors(empty);
 		std::vector<float> distance;
 		for (long unsigned int j = 0; j < swarm.size(); j++) {
-			if (i != j) {
-				distance.push_back(swarm.at(i).getPosition().euclideanDistance(swarm.at(j).getPosition()));
-
-			}
+			distance.push_back(swarm.at(i).getPosition().euclideanDistance(swarm.at(j).getPosition()));
 		}
 		distances.push_back(std::make_pair(swarm.at(i), distance));
 	}
