@@ -75,12 +75,12 @@ Position Position::operator-(Position position) {
 	return Position(this->getX() - position.getX(), this->getY() - position.getY(), this->getZ() - position.getZ());
 }
 
-Position Position::operator+(float num) {
-	return Position(this->getX() + num, this->getY() + num, this->getZ() + num);
+Position Position::operator*(float num) {
+	return Position(this->getX() * num, this->getY() * num, this->getZ() * num);
 }
 
-Position Position::operator-(float num) {
-	return Position(this->getX() - num, this->getY() - num, this->getZ() - num);
+Position Position::operator/(float num) {
+	return Position(this->getX() / num, this->getY() / num, this->getZ() / num);
 }
 
 // Scale stuff

@@ -63,7 +63,7 @@ void Boid::show(GLfloat radius, Color color) {
 	gluQuadricNormals(pObj, GLU_SMOOTH);
 
 	Rotation rotation = Rotation();
-	Sphere sphere = Sphere(pObj, radius, 10, 10, rotation, this->position, color);
+	Sphere sphere = Sphere(pObj, radius, 5, 5, rotation, this->position, color);
 	sphere.draw();
 }
 
