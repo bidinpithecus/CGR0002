@@ -1,6 +1,6 @@
 CPP = g++
 CPPFLAGS = -Wall -Wextra -std=c++20 -O3 -march=native -finline-functions -funroll-loops -flto
-LDFLAGS = -lGL -lglut -lGLU -lm
+LDFLAGS = -lGL -lglut -lGLU -lm -lfreeimage
 SRC_DIR = src
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp, $(SRC_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
 BINARY = main

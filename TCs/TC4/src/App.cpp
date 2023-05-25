@@ -120,7 +120,7 @@ void setupRC() {
 	// Counter clock-wise polygons face out
 	glFrontFace(GL_CCW);
 	// Do not calculate inside
-	glEnable(GL_CULL_FACE);
+	// glEnable(GL_CULL_FACE);
 
 	// Enable lighting
 	glEnable(GL_LIGHTING);

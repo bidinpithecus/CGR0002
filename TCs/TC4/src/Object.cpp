@@ -1,77 +1,125 @@
 #include "Object.hpp"
-#include "Coordinate3D.hpp"
+#include <sstream>
 
 using namespace std;
 
-Object::Object() {}
+Object::Object() { }
 Object::~Object() {}
+std::string Object::getObjPath() { return objPath; }
+std::string Object::getMtlPath() { return mtlPath; }
+std::vector<Vertex> Object::getVertices() { return vertices; }
+std::vector<Texture> Object::getTextures() { return textureCoords; }
+std::vector<Normal> Object::getNormals() { return normals; }
+std::vector<Face> Object::getFaces() { return faces; }
+std::map<std::string, Material> Object::getMaterialMap() {return materialMap; }
+std::vector<Material> Object::getMaterials() { return materials; }
 
 bool Object::loadOBJ(const string path) {
-	vector<Coordinate3D> positions;
-	vector<Coordinate3D> normals;
-	vector<Coordinate2D> textures;
 	string curUseMtl;
 	ifstream file(path);
-	if (!file) { cout << "Error opening file" << endl; return false; }
-	float x, y, z;
+	if (!file.is_open()) {
+		cerr << "Error opening file: " << path << endl;
+		return false;
+	}
 
 	string line;
 	while (getline(file, line)) {
-		if (!line.compare(0, v.length(), v)) {
-			sscanf(line.c_str(), "v %f %f %f", &x, &y, &z);
-			positions.push_back(Coordinate3D(x, y, z));
-		} else if (!line.compare(0, vt.length(), vt)) {
-			sscanf(line.c_str(), "vt %f %f", &x, &y);
-			textures.push_back(Coordinate2D(x, y));
-		} else if (!line.compare(0, vn.length(), vn)) {
-			sscanf(line.c_str(), "vn %f %f %f", &x, &y, &z);
-			normals.push_back(Coordinate3D(x, y, z));
-		} else if (!line.compare(0, mtllib.length(), mtllib)) {
-			this->mtlPath = line.substr(mtllib.length() + 1);
-			loadMTL();
-		} else if (!line.compare(0, usemtl.length(), usemtl)) {
-			curUseMtl = line.substr(usemtl.length() + 1);
-		} else if (!line.compare(0, f.length(), f)) {
-			int v1, vt1, vn1;
-			int v2, vt2, vn2;
-			int v3, vt3, vn3;
-			sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &v1, &vt1, &vn1, &v2, &vt2, &vn2, &v3, &vt3, &vn3);
+		istringstream iss(line);
+        string token;
+        iss >> token;
 
-			addVertex(Coordinate3D(v1, vt1, vn1), curUseMtl, positions, textures, normals);
-			addVertex(Coordinate3D(v2, vt2, vn2), curUseMtl, positions, textures, normals);
-			addVertex(Coordinate3D(v3, vt3, vn3), curUseMtl, positions, textures, normals);
-		}
+		if (token == vt) {
+			Texture texCoords;
+			iss >> texCoords.x >> texCoords.y;
+			textureCoords.push_back(texCoords);
+		} else if (token == vn) {
+			Normal normal;
+			iss >> normal.x >> normal.y >> normal.z;
+			normals.push_back(normal);
+		} else if (token == v) {
+			Vertex vertex;
+			iss >> vertex.x >> vertex.y >> vertex.z;
+			vertices.push_back(vertex);
+		} else if (token == mtllib) {
+			this->mtlPath = dataPath;
+			this->mtlPath = mtlPath.append(line.substr(mtllib.length() + 1));
+		} else if (token == f) {
+			Face face;
+			string vertexIndex;
+			while (iss >> vertexIndex) {
+				istringstream viss(vertexIndex);
+				int vIndex, tIndex, nIndex;
+				char slash;
+				if (viss >> vIndex >> slash >> tIndex >> slash >> nIndex) {
+                    face.vertexIndices.push_back(vIndex - 1);
+                    face.textureIndices.push_back(tIndex - 1);
+                    face.normalIndices.push_back(nIndex - 1);
+                } else {
+                    std::cerr << "Failed to parse face vertex index: " << vertexIndex << std::endl;
+                    return false;
+                }
+			}
+			faces.push_back(face);
+		} else if (token == usemtl) {
+            std::string materialName;
+            iss >> materialName;
+            for (size_t i = 0; i < materials.size(); ++i) {
+                if (materials[i].name == materialName) {
+                    faces.back().materialIndex = static_cast<int>(i);
+                    break;
+                }
+            }
+        }
 	}
+	file.close();
 	return true;
 }
 
-bool Object::loadMTL() {
-	ifstream file(mtlPath);
-	if (!file) { cout << "Error opening file" << endl; return false; }
-	string curNewMtl;
+bool Object::loadMTL(const string path) {
+	ifstream file(path);
+	if (!file.is_open()) {
+		cerr << "Error opening file: " << path << endl;
+		return false;
+	}
 
 	string line;
-	while (getline(file, line)) {
-		if (!line.compare(0, newmtl.length(), newmtl)) {
-			curNewMtl = line.substr(newmtl.length() + 1);
-			materialMap[curNewMtl] = Color();
-		} else if (!line.compare(0, Ks.length(), Ks)) {
-			float r, g, b;
-			sscanf(line.c_str(), "Ks %f %f %f", &r, &g, &b);
-			Color& color = materialMap[curNewMtl];
-			color.setRed(r);
-			color.setGreen(g);
-			color.setBlue(b);
-		}
-	}
+    std::vector<Material> materials;
+    Material currentMaterial;
+
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string token;
+        iss >> token;
+
+        if (token == newmtl) {
+            if (!currentMaterial.name.empty()) {
+                materials.push_back(currentMaterial);
+            }
+            currentMaterial = Material();
+            iss >> currentMaterial.name;
+        } else if (token == Ka) {
+            iss >> currentMaterial.ambient[0] >> currentMaterial.ambient[1] >> currentMaterial.ambient[2];
+        } else if (token == Ks) {
+            iss >> currentMaterial.specular[0] >> currentMaterial.specular[1] >> currentMaterial.specular[2];
+        } else if (token == Ke) {
+            iss >> currentMaterial.emission[0] >> currentMaterial.emission[1] >> currentMaterial.emission[2];
+        } else if (token == Ns) {
+            iss >> currentMaterial.shininess;
+        } else if (token == Ni) {
+            iss >> currentMaterial.opticalDensity;
+        } else if (token == d || token == Tr) {
+            iss >> currentMaterial.dissolve;
+        } else if (token == illum) {
+            iss >> currentMaterial.illuminationModel;
+        } else if (token == map_Kd) {
+            iss >> currentMaterial.diffuseMap;
+        }
+    }
+
+    if (!currentMaterial.name.empty()) {
+        materials.push_back(currentMaterial);
+    }
+
+	file.close();
 	return true;
-}
-
-void Object::addVertex(Coordinate3D index, std::string mtlName, std::vector<Coordinate3D> positions, std::vector<Coordinate2D> textures, std::vector<Coordinate3D> normals) {
-	Color color;
-	Coordinate3D newPos = positions.at(index.getX() - 1);
-	Coordinate2D newTex = textures.at(index.getY() - 1);
-	Coordinate3D newNor = normals.at(index.getZ() - 1);
-
-	this->vertices.push_back(Vertex(color, newPos, newTex, newNor));
 }
