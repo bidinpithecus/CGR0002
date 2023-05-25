@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 #include "Helpers.hpp"
 
-#define NUM_OF_PARTICLES 3000
+#define NUM_OF_PARTICLES 20000
 #define LIFETIME 100
 #define GRAVITY 0.0005
 

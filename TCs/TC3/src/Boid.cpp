@@ -38,8 +38,6 @@ Boid::Boid(Position lowerLimit, Position upperLimit) {
 
 	this->velocity = newVel / 10;
 	this->acceleration = newAcc / randomFloat(14.5, 15.5);
-	// this->acceleration = newAcc / 15;
-	// this->maxSpeed = upperLimit.getX() / 100;
 	this->maxSpeed = randomFloat(upperLimit.getX() / 99.5, upperLimit.getX() / 100.5);
 }
 
